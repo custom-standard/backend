@@ -3,8 +3,8 @@ package com.example.custard.api.exception
 import com.example.custard.api.response.ResponseCode
 import java.lang.RuntimeException
 
-class BusinessException (
+open class BusinessException (
     val code: ResponseCode,
-    message: String
+    message: String?
 ) : RuntimeException(message ?: code.message) {
 }
