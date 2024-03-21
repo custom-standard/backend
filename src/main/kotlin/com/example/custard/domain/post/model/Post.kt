@@ -29,42 +29,42 @@ abstract class Post (
 
     // TODO: 카테고리 엔티티 추가 후 변경
     var category: String = category
+        protected set
 
     var title: String = title
-
-    var dates: String? = dates
-
-    var delivery: Boolean = delivery
-
-    var place: String? = place
+        protected set
 
     var description: String = description
+        protected set
+
+    // TODO: 날짜 엔티티 추가 후 변경
+    var dates: String? = dates
+        protected set
+
+    var delivery: Boolean = delivery
+        protected set
+
+    var place: String? = place
+        protected set
 
     var public: Boolean = false
+        protected set
 //    var deleted: Boolean = false
 
-    fun updateCategory(category: String) {
+    fun updatePost(
+        category: String,
+        title: String,
+        description: String,
+        dates: String?,
+        delivery: Boolean,
+        place: String?,
+    ) {
         this.category = category
-    }
-
-    fun updateTitle(title: String) {
         this.title = title
-    }
-
-    fun updateDates(dates: String) {
-        this.dates = dates
-    }
-
-    fun updateDelivery(delivery: Boolean) {
-        this.delivery = delivery
-    }
-
-    fun updatePlace(place: String) {
-        this.place = place
-    }
-
-    fun updateDescription(description: String) {
         this.description = description
+        this.dates = dates
+        this.delivery = delivery
+        this.place = place
     }
 
     fun updatePublic(public: Boolean) {

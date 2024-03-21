@@ -21,7 +21,16 @@ class SalePost (
     // TODO: 상품 엔티티 추가 후 변경
     var product: String = product
 
-    fun updateProduct(product: String) {
+    fun updateSalePost(
+        category: String,
+        title: String,
+        description: String,
+        dates: String,
+        delivery: Boolean,
+        place: String?,
+        product: String,
+    ) {
+        super.updatePost(category, title, description, dates, delivery, place)
         this.product = product
     }
 }
