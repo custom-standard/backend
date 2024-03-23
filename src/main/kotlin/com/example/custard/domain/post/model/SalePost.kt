@@ -7,7 +7,7 @@ import java.util.Date
 @Entity
 class SalePost (
     writer: User,
-    category: String,
+    category: Category,
     title: String,
     description: String,
     // TODO: 날짜 엔티티 추가 후 변경
@@ -22,7 +22,7 @@ class SalePost (
     var product: String = product
 
     fun updateSalePost(
-        category: String,
+        category: Category,
         title: String,
         description: String,
         dates: String,

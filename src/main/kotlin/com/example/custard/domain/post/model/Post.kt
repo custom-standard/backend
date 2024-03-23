@@ -11,8 +11,7 @@ import jakarta.persistence.ManyToOne
 // TODO : BaseEntity 추가
 class Post (
     writer: User,
-    // TODO: 카테고리 엔티티 추가 후 변경
-    category: String,
+    category: Category,
     title: String,
     description: String,
     // TODO: 날짜 엔티티 추가 후 변경
@@ -28,7 +27,7 @@ class Post (
     val writer: User = writer
 
     // TODO: 카테고리 엔티티 추가 후 변경
-    var category: String = category
+    var category: Category = category
         protected set
 
     var title: String = title
@@ -52,7 +51,7 @@ class Post (
 //    var deleted: Boolean = false
 
     fun updatePost(
-        category: String,
+        category: Category,
         title: String,
         description: String,
         dates: String?,

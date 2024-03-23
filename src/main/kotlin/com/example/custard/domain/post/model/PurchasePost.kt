@@ -4,7 +4,7 @@ import com.example.custard.domain.user.model.User
 
 class PurchasePost (
     writer: User,
-    category: String,
+    category: Category,
     title: String,
     description: String,
     // TODO: 날짜 엔티티 추가 후 변경
@@ -23,7 +23,7 @@ class PurchasePost (
         protected set
 
     fun updatePurchasePost(
-        category: String,
+        category: Category,
         title: String,
         description: String,
         dates: String,
