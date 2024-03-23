@@ -9,7 +9,7 @@ import jakarta.persistence.ManyToOne
 
 @Entity
 // TODO : BaseEntity 추가
-abstract class Post (
+class Post (
     writer: User,
     // TODO: 카테고리 엔티티 추가 후 변경
     category: String,
