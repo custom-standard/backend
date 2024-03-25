@@ -1,11 +1,8 @@
 package com.example.custard.domain.post.model
 
+import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.user.model.User
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 
 @Entity
 // TODO : BaseEntity 추가
@@ -14,8 +11,7 @@ class Post (
     category: Category,
     title: String,
     description: String,
-    // TODO: 날짜 엔티티 추가 후 변경
-    dates: String?,
+    dates: MutableList<PostDate>,
     delivery: Boolean,
     place: String?,
 ) {
@@ -23,10 +19,9 @@ class Post (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     val writer: User = writer
 
-    // TODO: 카테고리 엔티티 추가 후 변경
     var category: Category = category
         protected set
 
@@ -36,8 +31,8 @@ class Post (
     var description: String = description
         protected set
 
-    // TODO: 날짜 엔티티 추가 후 변경
-    var dates: String? = dates
+    @OneToMany(mappedBy = "post")
+    var dates: MutableList<PostDate> = dates
         protected set
 
     var delivery: Boolean = delivery
@@ -54,7 +49,7 @@ class Post (
         category: Category,
         title: String,
         description: String,
-        dates: String?,
+        dates: MutableList<PostDate>,
         delivery: Boolean,
         place: String?,
     ) {

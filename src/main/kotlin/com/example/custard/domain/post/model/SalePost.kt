@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.model
 
+import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.Entity
 import java.util.Date
@@ -10,8 +11,7 @@ class SalePost (
     category: Category,
     title: String,
     description: String,
-    // TODO: 날짜 엔티티 추가 후 변경
-    dates: String,
+    dates: MutableList<PostDate>,
     delivery: Boolean,
     place: String?,
 
@@ -25,7 +25,7 @@ class SalePost (
         category: Category,
         title: String,
         description: String,
-        dates: String,
+        dates: MutableList<PostDate>,
         delivery: Boolean,
         place: String?,
         product: String,
