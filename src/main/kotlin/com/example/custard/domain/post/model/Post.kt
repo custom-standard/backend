@@ -4,9 +4,10 @@ import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
-@Entity
 // TODO : BaseEntity 추가
+@Entity
 class Post (
+    type: PostType,
     writer: User,
     category: Category,
     title: String,
@@ -14,10 +15,16 @@ class Post (
     dates: MutableList<PostDate>,
     delivery: Boolean,
     place: String?,
+    minPrice: Int,
+    maxPrice: Int,
+    // TODO: 상품 엔티티 추가 후 변경
+    product: String?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
+
+    val type: PostType = type
 
     @ManyToOne(fetch = FetchType.LAZY)
     val writer: User = writer
@@ -41,6 +48,16 @@ class Post (
     var place: String? = place
         protected set
 
+    var minPrice: Int = minPrice
+        protected set
+
+    var maxPrice: Int = maxPrice
+        protected set
+
+    // TODO: 상품 엔티티 추가 후 변경
+    var product: String? = product
+        protected set
+
     var public: Boolean = false
         protected set
 //    var deleted: Boolean = false
@@ -52,6 +69,9 @@ class Post (
         dates: MutableList<PostDate>,
         delivery: Boolean,
         place: String?,
+        minPrice: Int,
+        maxPrice: Int,
+        product: String?,
     ) {
         this.category = category
         this.title = title
@@ -59,6 +79,9 @@ class Post (
         this.dates = dates
         this.delivery = delivery
         this.place = place
+        this.minPrice = minPrice
+        this.maxPrice = maxPrice
+        this.product = product
     }
 
     fun updatePublic(public: Boolean) {
