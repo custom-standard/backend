@@ -7,6 +7,8 @@ plugins {
     kotlin("plugin.spring") version "1.8.0"
     kotlin("plugin.jpa") version "1.8.0"
     kotlin("plugin.allopen") version "1.8.0"
+    kotlin("kapt") version "1.9.21"
+    idea
 }
 
 group = "com.example"
@@ -47,6 +49,23 @@ dependencies {
     // jwt
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
+
+    // test
+    testImplementation("io.mockk:mockk:1.9.3")
+
+    // query dsl
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    kapt("jakarta.annotation:jakarta.annotation-api")
+    kapt("jakarta.persistence:jakarta.persistence-api")
+}
+
+idea {
+    module {
+        val kaptMain = file("build/generated/source/kapt/main")
+        sourceDirs.add(kaptMain)
+        generatedSourceDirs.add(kaptMain)
+    }
 }
 
 tasks.withType<KotlinCompile> {
