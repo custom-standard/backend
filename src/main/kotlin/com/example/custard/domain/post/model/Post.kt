@@ -12,7 +12,6 @@ class Post (
     category: Category,
     title: String,
     description: String,
-    dates: MutableList<PostDate>,
     delivery: Boolean,
     place: String?,
     minPrice: Int,
@@ -20,6 +19,12 @@ class Post (
     // TODO: 상품 엔티티 추가 후 변경
     product: String?,
 ) {
+    constructor(writer: User, category: Category, title: String, description: String, delivery: Boolean, place: String?, minPrice: Int, maxPrice: Int)
+            : this(PostType.PURCHASE, writer, category, title, description, delivery, place, minPrice, maxPrice, null)
+
+    constructor(writer: User, category: Category, title: String, description: String, delivery: Boolean, place: String?, minPrice: Int, maxPrice: Int, product: String?)
+            : this(PostType.SALE, writer, category, title, description, delivery, place, minPrice, maxPrice, product)
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
@@ -39,7 +44,7 @@ class Post (
         protected set
 
     @OneToMany(mappedBy = "post")
-    var dates: MutableList<PostDate> = dates
+    var dates: MutableList<PostDate> = mutableListOf()
         protected set
 
     var delivery: Boolean = delivery
@@ -66,7 +71,6 @@ class Post (
         category: Category,
         title: String,
         description: String,
-        dates: MutableList<PostDate>,
         delivery: Boolean,
         place: String?,
         minPrice: Int,
@@ -76,12 +80,15 @@ class Post (
         this.category = category
         this.title = title
         this.description = description
-        this.dates = dates
         this.delivery = delivery
         this.place = place
         this.minPrice = minPrice
         this.maxPrice = maxPrice
         this.product = product
+    }
+
+    fun updateDates(dates: MutableList<PostDate>) {
+        this.dates = dates
     }
 
     fun updatePublic(public: Boolean) {
