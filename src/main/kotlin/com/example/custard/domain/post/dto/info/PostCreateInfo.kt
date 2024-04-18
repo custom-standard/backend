@@ -1,7 +1,9 @@
 package com.example.custard.domain.post.dto.info
 
 import com.example.custard.domain.post.model.Category
+import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
+import com.example.custard.domain.user.model.User
 import java.time.LocalDate
 
 class PostCreateInfo (
@@ -40,4 +42,13 @@ class PostCreateInfo (
                 maxPrice: Int,
                 product: String?): this(PostType.SALE, category, title, description, startDate, endDate, delivery, place, minPrice, maxPrice, product) {
                 }
+
+    companion object {
+        fun toEntity(info: PostCreateInfo, writer: User): Post {
+            return when (info.type) {
+                PostType.PURCHASE -> Post(writer, info.category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice)
+                PostType.SALE -> Post(writer, info.category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice, info.product)
+            }
+        }
+    }
 }

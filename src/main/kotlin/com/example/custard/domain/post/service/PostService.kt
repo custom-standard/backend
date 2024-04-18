@@ -35,25 +35,10 @@ class PostService(
     @Transactional
     fun createPost(email: String, info: PostCreateInfo): Post {
         val writer: User = userStore.getByEmail(email)
-
-        val type: PostType = info.type
-        val category: Category = info.category
-        val title: String = info.title
-        val description: String = info.description
-        val startDate: LocalDate = info.startDate
-        val endDate: LocalDate = info.endDate
-        val delivery: Boolean = info.delivery
-        val place: String? = info.place
-        val minPrice: Int = info.minPrice
-        val maxPrice: Int = info.maxPrice
-        val product: String? = info.product
-
         // TODO: PostDate 처리
 
-        return when(type) {
-            PostType.PURCHASE -> postStore.savePost(Post(writer, category, title, description, delivery, place, minPrice, maxPrice))
-            PostType.SALE -> postStore.savePost(Post(writer, category, title, description, delivery, place, minPrice, maxPrice, product))
-        }
+        val post: Post = PostCreateInfo.toEntity(info, writer)
+        return postStore.savePost(post)
     }
 
     fun updateDates(post: Post, startDate: LocalDate, endDate: LocalDate): MutableList<PostDate> {
