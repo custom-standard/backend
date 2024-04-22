@@ -30,7 +30,7 @@ class ApiResponse<T> private constructor (
             var errors = HashMap<String, String>()
 
             bindingResult.fieldErrors.forEach { error ->
-                if (error is FieldError) errors[error.field] = error.defaultMessage ?: "";
+                if (error is FieldError) errors[error.field] = error.defaultMessage ?: ""
                 else errors[error.objectName] = error.defaultMessage ?: ""
             }
 

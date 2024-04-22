@@ -51,14 +51,14 @@ class JwtTokenProvider(
 
         val user: CustomUserDetails = authentication.principal as CustomUserDetails
 
-        val userId: String = user.getName()
+        val username: String = user.username
         val role: String = authentication.authorities.stream()
             .map { it.authority }
             .collect(Collectors.joining(","))
 
         return Jwts.builder()
             .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-            .setSubject(userId)
+            .setSubject(username)
             .claim(AUTHORITIES_KEY, role)
             .setIssuer("custard")
             .setIssuedAt(now)
@@ -84,7 +84,7 @@ class JwtTokenProvider(
 
     fun saveRefreshToken(authentication: Authentication, token: String) {
         val customUser: CustomUserDetails = authentication.principal as CustomUserDetails
-        val user: User = userStore.getById(customUser.getName().toLong())
+        val user: User = userStore.getByEmailAndProvider(customUser.user.email, customUser.user.provider)
 
         user.updateRefreshToken(token)
     }
@@ -92,18 +92,13 @@ class JwtTokenProvider(
     fun getAuthentication(accessToken: String): Authentication {
         val claims: Claims = parseClaims(accessToken)
 
-        val authorities: Collection<out GrantedAuthority> =
-            Arrays.stream(claims[AUTHORITIES_KEY].toString().split(",").toTypedArray())
-                .map { role: String? -> SimpleGrantedAuthority(role) }
-                .collect(Collectors.toList())
+        val user: User = userStore.getByUUID(claims.subject)
 
         val principal: CustomUserDetails = CustomUserDetails(
-            id = claims.subject as Long,
-            email = "",
-            authorities = authorities
+            user
         )
 
-        return UsernamePasswordAuthenticationToken(principal, "", authorities)
+        return UsernamePasswordAuthenticationToken(principal, "", principal.authorities)
     }
 
     private fun parseClaims(accessToken: String): Claims {
