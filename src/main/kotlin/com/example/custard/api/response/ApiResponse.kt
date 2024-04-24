@@ -7,11 +7,10 @@ import org.springframework.validation.BindingResult
 import org.springframework.validation.FieldError
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 class ApiResponse<T> private constructor (
-    private val code: ResponseCode,
-    private val data: T?,
-    private val message: String?
+    val code: ResponseCode,
+    val data: T?,
+    val message: String?
 ) {
     companion object {
         fun <T> success (data: T): ApiResponse<T> {
