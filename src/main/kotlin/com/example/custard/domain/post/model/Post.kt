@@ -34,6 +34,7 @@ class Post (
     @ManyToOne(fetch = FetchType.LAZY)
     val writer: User = writer
 
+    @ManyToOne(fetch = FetchType.LAZY)
     var category: Category = category
         protected set
 

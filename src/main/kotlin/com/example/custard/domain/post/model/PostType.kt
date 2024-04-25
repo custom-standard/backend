@@ -10,12 +10,4 @@ enum class PostType (
 ){
     SALE("판매"),
     PURCHASE("구매");
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "type_id")
-    val id: Long = 0
-
-    @Column(name = "type_name", nullable = false, unique = true)
-    val typeName: String = typeName
 }
