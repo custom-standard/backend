@@ -27,10 +27,8 @@ class PostCustomRepositoryImpl (
             .where(
                 qPost.type.eq(PostType.PURCHASE),
                 eqCategory(category),
-                eqDate(date)
-            )
-            .having(
-                eqPrice(minPrice, maxPrice)
+                eqDate(date),
+                priceOverlap(minPrice, maxPrice)
             )
             .fetch()
     }
@@ -48,10 +46,8 @@ class PostCustomRepositoryImpl (
             .where(
                 qPost.type.eq(PostType.SALE),
                 eqCategory(category),
-                eqDate(date)
-            )
-            .having(
-                eqPrice(minPrice, maxPrice)
+                eqDate(date),
+                priceOverlap(minPrice, maxPrice)
             )
             .fetch()
     }
@@ -72,7 +68,7 @@ class PostCustomRepositoryImpl (
         }
     }
 
-    private fun eqPrice(minPrice: Int?, maxPrice: Int?): BooleanExpression? {
+    private fun priceOverlap(minPrice: Int?, maxPrice: Int?): BooleanExpression? {
         return when {
             minPrice != null && maxPrice != null ->
                 QPost.post.minPrice.loe(maxPrice)
