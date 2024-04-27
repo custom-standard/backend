@@ -4,50 +4,46 @@ import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
 import com.example.custard.domain.user.model.User
-import java.time.LocalDate
 
 class PostCreateInfo (
     val type: PostType,
-    val category: Category,
+    val categoryId: Long,
     val title: String,
     val description: String,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val dates: List<PostDateInfo>,
     val delivery: Boolean,
     val place: String?,
     val minPrice: Int,
     val maxPrice: Int,
     // *** only for sale post ***
-    val product: String?
+    val product: Long?
 ) {
-    constructor(category: Category,
+    constructor(categoryId: Long,
                 title: String,
                 description: String,
-                startDate: LocalDate,
-                endDate: LocalDate,
+                dates: List<PostDateInfo>,
                 delivery: Boolean,
                 place: String?,
                 minPrice: Int,
-                maxPrice: Int) : this(PostType.PURCHASE, category, title, description, startDate, endDate, delivery, place, minPrice, maxPrice, null) {
+                maxPrice: Int) : this(PostType.PURCHASE, categoryId, title, description, dates, delivery, place, minPrice, maxPrice, null) {
                 }
 
-    constructor(category: Category,
+    constructor(categoryId: Long,
                 title: String,
                 description: String,
-                startDate: LocalDate,
-                endDate: LocalDate,
+                dates: List<PostDateInfo>,
                 delivery: Boolean,
                 place: String?,
                 minPrice: Int,
                 maxPrice: Int,
-                product: String?): this(PostType.SALE, category, title, description, startDate, endDate, delivery, place, minPrice, maxPrice, product) {
+                product: Long?): this(PostType.SALE, categoryId, title, description, dates, delivery, place, minPrice, maxPrice, product) {
                 }
 
     companion object {
-        fun toEntity(info: PostCreateInfo, writer: User): Post {
+        fun toEntity(info: PostCreateInfo, category: Category, writer: User): Post {
             return when (info.type) {
-                PostType.PURCHASE -> Post(writer, info.category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice)
-                PostType.SALE -> Post(writer, info.category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice, info.product)
+                PostType.PURCHASE -> Post(writer, category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice)
+                PostType.SALE -> Post(writer, category, info.title, info.description, info.delivery, info.place, info.minPrice, info.maxPrice, info.product.toString())
             }
         }
     }
