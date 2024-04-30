@@ -18,15 +18,6 @@ class OAuth2LoginFailureHandler (
         response: HttpServletResponse?,
         exception: AuthenticationException?
     ) {
-        println("OAuth2LoginFailureHandler.onAuthenticationFailure")
-        println(exception?.message)
-        exception?.cause?.printStackTrace()
-        for (stackTrace in exception?.stackTrace!!) {
-            println(stackTrace)
-        }
-        println(exception?.cause)
-        println(exception?.suppressedExceptions)
-
         val apiResponse: ApiResponse<*> = ApiResponse.exceptionError(ResponseCode.BAD_REQUEST, exception?.localizedMessage!!)
 
         response?.status = HttpServletResponse.SC_BAD_REQUEST

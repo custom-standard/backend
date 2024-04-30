@@ -20,7 +20,6 @@ class CustomOAuth2UserService (
     }
 
     private fun process(userRequest: OAuth2UserRequest?, oAuth2User: OAuth2User): OAuth2User {
-        println("CustomOAuth2UserService.process")
         val registrationId: String? = userRequest?.clientRegistration?.registrationId?.uppercase()
         val authProvider: AuthProvider = AuthProvider.valueOf(registrationId ?: "")
         val userInfo: CustomOAuth2User = CustomOAuth2User.of(authProvider, oAuth2User.attributes as Map<String, Any>)
@@ -35,7 +34,6 @@ class CustomOAuth2UserService (
     }
 
     private fun createUser(userInfo: CustomOAuth2User, authProvider: AuthProvider): User {
-        println("CustomOAuth2UserService.createUser")
         val user: User = User(
             provider = authProvider,
             name = userInfo.name,

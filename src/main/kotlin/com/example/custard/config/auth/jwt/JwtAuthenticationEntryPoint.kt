@@ -18,7 +18,6 @@ class JwtAuthenticationEntryPoint (
         response: HttpServletResponse?,
         authException: AuthenticationException?
     ) {
-        println("JwtAuthenticationEntryPoint.commence")
         val apiResponse: ApiResponse<*> = ApiResponse.exceptionError(ResponseCode.BAD_REQUEST, authException?.localizedMessage ?: "Unauthorized")
 
         response?.status = HttpServletResponse.SC_BAD_REQUEST
