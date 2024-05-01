@@ -6,6 +6,7 @@ import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.post.service.date.DateStore
 import com.example.custard.domain.post.service.date.PostDateStore
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class PostDateStoreImpl(
@@ -16,15 +17,19 @@ class PostDateStoreImpl(
         return postDateRepository.existsPostDateByDate(date)
     }
 
+    @Transactional
     override fun savePostDate(post: Post, dates: List<Date>): List<PostDate> {
-        dates.map { date -> dateStore.saveDateIfNotExists(date) }
-        val postDates = dates.map { PostDate(post, it) }
+        val savedDates = dates.map { date -> dateStore.saveDateIfNotExists(date) }
+        val postDates = savedDates.map { PostDate(post, it) }
         return postDateRepository.saveAll(postDates)
     }
 
+    @Transactional
     override fun updatePostDate(post: Post, dates: List<Date>): List<PostDate> {
+        val dateEntities = dates.map { date -> dateStore.saveDateIfNotExists(date) }
+
         val postDates = postDateRepository.findAllByPost(post)
-        val newPostDates = dates.map { PostDate(post, it) }
+        val newPostDates = dateEntities.map { PostDate(post, it) }
 
         val postDatesMap = postDates.associateBy { it.date }
         val newPostDatesMap = newPostDates.associateBy { it.date }
@@ -33,11 +38,17 @@ class PostDateStoreImpl(
         val toSave = newPostDates.filter { !postDatesMap.containsKey(it.date) }
 
         deletePostDate(toDelete)
+
+        toDelete.forEach { postDate ->
+            if (!existsPostDateByDate(postDate.date)) dateStore.deleteDate(postDate.date)
+        }
+
         postDateRepository.saveAll(toSave)
 
         return postDateRepository.findAllByPost(post)
     }
 
+    @Transactional
     override fun deletePostDate(postDates: List<PostDate>) {
         postDateRepository.deleteAll(postDates)
 
@@ -49,6 +60,7 @@ class PostDateStoreImpl(
         dateStore.deleteDates(toDelete)
     }
 
+    @Transactional
     override fun deleteAllByPost(post: Post) {
         val postDates = postDateRepository.findAllByPost(post)
         deletePostDate(postDates)

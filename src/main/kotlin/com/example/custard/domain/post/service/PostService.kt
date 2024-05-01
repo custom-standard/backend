@@ -10,7 +10,6 @@ import com.example.custard.domain.post.service.category.CategoryStore
 import com.example.custard.domain.post.service.date.PostDateStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.service.UserStore
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -39,29 +38,28 @@ class PostService(
     }
 
     /* 게시글 생성 */
-    @Transactional
-    fun createPost(userUUID: String, info: PostCreateInfo): Post {
+    fun createPost(userUUID: String, info: PostCreateInfo): PostResponse {
         val writer: User = userStore.getByUUID(userUUID)
         val category: Category = categoryStore.getCategory(info.categoryId)
 
         val post: Post = PostCreateInfo.toEntity(info, category, writer)
+        val savedPost: Post = postStore.savePost(post)
 
         val dates = info.dates
-        val postDates = dates.map { date -> PostDateInfo.toEntity(date, post) }
+        val dateEntities = dates.map { date -> DateInfo.toEntity(date) }
 
-        postDateStore.savePostDate(post, postDates)
+        postDateStore.savePostDate(post, dateEntities)
 
-        return postStore.savePost(post)
+        return PostResponse.of(savedPost)
     }
 
-    fun updateDates(post: Post, dates: List<PostDateInfo>): List<PostDate> {
-        val postDates = dates.map { date -> PostDateInfo.toEntity(date, post) }
-        return postDateStore.updatePostDate(post, postDates)
+    fun updateDates(post: Post, dates: List<DateInfo>): List<PostDate> {
+        val dates = dates.map { date -> DateInfo.toEntity(date) }
+        return postDateStore.updatePostDate(post, dates)
     }
 
     /* 게시글 수정 */
-    @Transactional
-    fun updatePost(userUUID: String, info: PostUpdateInfo): Post {
+    fun updatePost(userUUID: String, info: PostUpdateInfo): PostResponse {
         val writer: User = userStore.getByUUID(userUUID)
 
         val id: Long = info.id
@@ -75,7 +73,7 @@ class PostService(
         val category: Category = categoryStore.getCategory(info.categoryId)
         val title: String = info.title
         val description: String = info.description
-        val dates: List<PostDateInfo> = info.dates
+        val dates: List<DateInfo> = info.dates
         val delivery: Boolean = info.delivery
         val place: String? = info.place
         val minPrice: Int = info.minPrice
@@ -83,14 +81,13 @@ class PostService(
         // *** only for sale post ***
         val product: String? = info.product
 
-        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice, product)
         updateDates(post, dates)
+        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice, product)
 
-        return post
+        return PostResponse.of(post)
     }
 
     /* 게시글 삭제 */
-    @Transactional
     fun deletePost(userUUID: String, id: Long) {
         val writer: User = userStore.getByUUID(userUUID)
         val post: Post = postStore.getById(id)
