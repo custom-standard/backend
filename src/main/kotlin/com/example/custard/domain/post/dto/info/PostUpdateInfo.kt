@@ -9,7 +9,7 @@ open class PostUpdateInfo (
     val categoryId: Long,
     val title: String,
     val description: String,
-    val dates: List<PostDateInfo>,
+    val dates: List<DateInfo>,
     val delivery: Boolean,
     val place: String?,
     val minPrice: Int,

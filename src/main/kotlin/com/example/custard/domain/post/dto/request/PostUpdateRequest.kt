@@ -1,6 +1,6 @@
 package com.example.custard.domain.post.dto.request
 
-import com.example.custard.domain.post.dto.info.PostDateInfo
+import com.example.custard.domain.post.dto.info.DateInfo
 import com.example.custard.domain.post.dto.info.PostUpdateInfo
 
 class PostUpdateRequest (
@@ -8,7 +8,7 @@ class PostUpdateRequest (
     val categoryId: Long,
     val title: String,
     val description: String,
-    val dates: List<PostDateRequest>,
+    val dates: List<DateRequest>,
     val delivery: Boolean,
     val place: String?,
     val minPrice: Int,
@@ -17,7 +17,7 @@ class PostUpdateRequest (
     val product: String?
 ) {
     fun createInfo(): PostUpdateInfo {
-        val datesInfo: List<PostDateInfo> = dates.map { date -> date.createInfo() }
+        val datesInfo: List<DateInfo> = dates.map { date -> date.createInfo() }
         return PostUpdateInfo(postId, categoryId, title, description, datesInfo, delivery, place, minPrice, maxPrice, product)
     }
 }

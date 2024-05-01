@@ -1,6 +1,5 @@
 package com.example.custard.domain.post.dto.response
 
-import com.example.custard.domain.post.dto.request.PostDateRequest
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
 import com.example.custard.domain.user.dto.response.UserResponse
@@ -10,7 +9,7 @@ class PostResponse (
     val category: CategoryResponse,
     val type: PostType,
     val title: String,
-    val dates: List<PostDateResponse>,
+    val dates: List<DateResponse>,
     val delivery: Boolean,
     val place: String?,
     val minPrice: Int,
@@ -24,7 +23,7 @@ class PostResponse (
                 category = CategoryResponse.of(post.category),
                 type = post.type,
                 title = post.title,
-                dates = post.dates.map { PostDateResponse.of(it.date) },
+                dates = post.dates.map { DateResponse.of(it.date) },
                 delivery = post.delivery,
                 place = post.place,
                 minPrice = post.minPrice,

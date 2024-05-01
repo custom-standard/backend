@@ -1,14 +1,14 @@
 package com.example.custard.domain.post.dto.request
 
-import com.example.custard.domain.post.dto.info.PostDateInfo
+import com.example.custard.domain.post.dto.info.DateInfo
 import java.time.LocalDate
 import java.time.LocalTime
 
-class PostDateRequest (
+class DateRequest (
     val date: LocalDate,
     val time: LocalTime?,
 ) {
-    fun createInfo(): PostDateInfo {
-        return PostDateInfo(date, time)
+    fun createInfo(): DateInfo {
+        return DateInfo(date, time)
     }
 }
