@@ -1,6 +1,7 @@
 package com.example.custard.domain.post.service
 
 import com.example.custard.domain.post.dto.info.*
+import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
 import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
@@ -38,7 +39,7 @@ class PostService(
     }
 
     /* 게시글 생성 */
-    fun createPost(userUUID: String, info: PostCreateInfo): PostResponse {
+    fun createPost(userUUID: String, info: PostCreateInfo): PostDetailResponse {
         val writer: User = userStore.getByUUID(userUUID)
         val category: Category = categoryStore.getCategory(info.categoryId)
 
@@ -50,7 +51,7 @@ class PostService(
 
         postDateStore.savePostDate(post, dateEntities)
 
-        return PostResponse.of(savedPost)
+        return PostDetailResponse.of(savedPost)
     }
 
     fun updateDates(post: Post, dates: List<DateInfo>): List<PostDate> {
@@ -59,7 +60,7 @@ class PostService(
     }
 
     /* 게시글 수정 */
-    fun updatePost(userUUID: String, info: PostUpdateInfo): PostResponse {
+    fun updatePost(userUUID: String, info: PostUpdateInfo): PostDetailResponse {
         val writer: User = userStore.getByUUID(userUUID)
 
         val id: Long = info.id
@@ -84,7 +85,7 @@ class PostService(
         updateDates(post, dates)
         post.updatePost(category, title, description, delivery, place, minPrice, maxPrice, product)
 
-        return PostResponse.of(post)
+        return PostDetailResponse.of(post)
     }
 
     /* 게시글 삭제 */
