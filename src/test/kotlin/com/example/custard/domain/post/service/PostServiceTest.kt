@@ -6,9 +6,20 @@ import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
+import com.example.custard.domain.post.model.date.Date
+import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.post.repository.PostCustomRepository
 import com.example.custard.domain.post.repository.PostRepository
 import com.example.custard.domain.post.repository.PostStoreImpl
+import com.example.custard.domain.post.repository.category.CategoryRepository
+import com.example.custard.domain.post.repository.category.CategoryStoreImpl
+import com.example.custard.domain.post.repository.date.DateRepository
+import com.example.custard.domain.post.repository.date.DateStoreImpl
+import com.example.custard.domain.post.repository.date.PostDateRepository
+import com.example.custard.domain.post.repository.date.PostDateStoreImpl
+import com.example.custard.domain.post.service.category.CategoryStore
+import com.example.custard.domain.post.service.date.DateStore
+import com.example.custard.domain.post.service.date.PostDateStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.repository.UserRepository
 import com.example.custard.domain.user.repository.UserStoreImpl
@@ -31,28 +42,48 @@ stub: 응답값을 설정하는 것
 class PostServiceTest : BehaviorSpec({
     val postRepository: PostRepository = mockk<PostRepository>()
     val postCustomRepository: PostCustomRepository = mockk<PostCustomRepository>()
+    val postDateRepository: PostDateRepository = mockk<PostDateRepository>()
+    val dateRepository: DateRepository = mockk<DateRepository>()
     val userRepository: UserRepository = mockk<UserRepository>()
+    val categoryRepository: CategoryRepository = mockk<CategoryRepository>()
 
     val postStore: PostStore = PostStoreImpl(postRepository, postCustomRepository)
+    val dateStore: DateStore = DateStoreImpl(dateRepository)
+    val postDateStore: PostDateStore = PostDateStoreImpl(postDateRepository, dateStore)
+    val categoryStore: CategoryStore = CategoryStoreImpl(categoryRepository)
+
     val userStore: UserStore = UserStoreImpl(userRepository)
-    val postService: PostService = PostService(postStore, userStore)
+    val postService: PostService = PostService(postStore, postDateStore, userStore, categoryStore)
 
     val postFactory: PostFactory = PostFactory()
 
     val user = User(AuthProvider.KAKAO, "test@test.com", "test", "test")
     val otherUser = User(AuthProvider.KAKAO, "testother@test.com", "testother", "testother")
 
-    /* data */
-    val expectedPurchasePost: Post = postFactory.createPost(PostType.PURCHASE, user, Category.FOOD, "title", "description", true, null, 30000, 50000, null)
-    val expectedUpdatedPurchasePost: Post = postFactory.createPost(PostType.PURCHASE, user, Category.FOOD, "updated title", "updated description", true, null, 40000, 60000, null)
+    val category = Category("TEST CATEGORY", "test category")
 
-    val expectedSalePost: Post = postFactory.createPost(PostType.SALE, user, Category.FOOD, "title", "description", true, null, 30000, 50000, "temporary product")
-    val expectedUpdatedSalePost: Post = postFactory.createPost(PostType.SALE, user, Category.FOOD, "updated title", "updated description", true, null, 40000, 60000, "updated temporary product")
+    /* data */
+    val expectedPurchasePost: Post = postFactory.createPost(PostType.PURCHASE, user, category, "title", "description", true, null, 30000, 50000, null)
+    val expectedUpdatedPurchasePost: Post = postFactory.createPost(PostType.PURCHASE, user, category, "updated title", "updated description", true, null, 40000, 60000, null)
+
+    val expectedSalePost: Post = postFactory.createPost(PostType.SALE, user, category, "title", "description", true, null, 30000, 50000, "temporary product")
+    val expectedUpdatedSalePost: Post = postFactory.createPost(PostType.SALE, user, category, "updated title", "updated description", true, null, 40000, 60000, "updated temporary product")
+
+    val expectedDate: Date = Date(LocalDate.of(2024, 4, 1), null)
+    val updatedDate: Date = Date(LocalDate.of(2024, 5, 1), null)
 
     val purchasePosts: List<Post> = postFactory.createPurchasePosts(3)
     val salePosts: List<Post> = postFactory.createSalePosts(3)
 
-    every { userRepository.findByEmail(user.email) } returns user
+    every { userRepository.findByUuid(user.uuid) } returns user
+    every { categoryRepository.findById(0) } returns Optional.of(category)
+
+    every { postDateRepository.deleteAll(any<List<PostDate>>()) } returns Unit
+    every { postDateRepository.existsPostDateByDate(any<Date>())} returns false
+
+    every { dateRepository.existsDateByDateAndTime(any(), any()) } returns false
+    every { dateRepository.save(any<Date>()) } returns expectedDate
+    every { dateRepository.delete(any<Date>()) } returns Unit
 
     beforeEach {
         every { userRepository.save(user) } returns user
@@ -60,6 +91,9 @@ class PostServiceTest : BehaviorSpec({
 
         userRepository.save(user)
         userRepository.save(otherUser)
+
+        every { categoryRepository.save(category) } returns category
+        categoryRepository.save(category)
     }
 
     /* PURCHASE */
@@ -72,27 +106,30 @@ class PostServiceTest : BehaviorSpec({
 
     Given("구매 게시글을 생성할 때") {
         When("유효한 정보로 구매 게시글을 생성하면") {
+            val dates: List<DateInfo> = listOf(
+                DateInfo(LocalDate.of(2024, 4, 1), null),
+            )
+
             val info: PostCreateInfo = postFactory.createPostCreateInfo(
                 PostType.PURCHASE,
-                Category.FOOD,
-                LocalDate.of(2024, 4, 1),
-                LocalDate.of(2024, 4, 3),
+                category.id,
+                dates,
                 true,
                 30000,
                 50000
             )
 
             every { postRepository.save(any<Post>()) } returns expectedPurchasePost
+            every { postDateRepository.saveAll(any<List<PostDate>>()) } returns listOf(PostDate(expectedPurchasePost, expectedDate))
 
             // TODO: Dates 처리
 
-            val result: Post = postService.createPost(user.email, info)
+            val result = postService.createPost(user.uuid.toString(), info)
             Then("생성한 구매 게시글이 반환된다") {
                 assertEquals(expectedPurchasePost.type, result.type)
-                assertEquals(expectedPurchasePost.category, result.category)
+                assertEquals(expectedPurchasePost.category.name, result.category.name)
                 assertEquals(expectedPurchasePost.title, result.title)
                 assertEquals(expectedPurchasePost.description, result.description)
-                assertEquals(expectedPurchasePost.public, result.public)
                 assertEquals(expectedPurchasePost.dates.size, result.dates.size)
             }
         }
@@ -112,7 +149,7 @@ class PostServiceTest : BehaviorSpec({
                 null, null, null, null
             )
             every { postCustomRepository.findAllPurchasePost(null, null, null, null) } returns purchasePosts
-            val result = postService.getPosts(info)
+            val result = postService.getPosts(user.uuid.toString(), info)
 
             Then("모든 구매 게시글이 조회된다") {
                 assertEquals(3, result.size)
@@ -126,10 +163,12 @@ class PostServiceTest : BehaviorSpec({
                 null, null, 8000, 12000
             )
             every { postCustomRepository.findAllPurchasePost(null, null, 8000, 12000) } returns purchasePosts.filter { it.minPrice <= 12000 && it.maxPrice >= 8000 }
-            val result = postService.getPosts(info)
+            val result = postService.getPosts(user.uuid.toString(), info)
 
             Then("필터 조건에 따른 구매 게시글이 조회된다") {
                 assertEquals(1, result.size)
+                assertEquals(10000, result[0].minPrice)
+                assertEquals(20000, result[0].maxPrice)
             }
         }
     }
@@ -138,26 +177,29 @@ class PostServiceTest : BehaviorSpec({
 
     Given("구매 게시글을 수정할 때") {
         When("유효한 정보로 구매 게시글을 수정하면") {
+            val dates: List<DateInfo> = listOf(
+                DateInfo(LocalDate.of(2024, 5, 1), null),
+            )
+
             val info: PostUpdateInfo = postFactory.createPostUpdateInfo(
                 PostType.PURCHASE,
                 1L,
-                Category.FOOD,
-                LocalDate.of(2024, 5, 1),
-                LocalDate.of(2024, 5, 4),
+                category.id,
+                dates,
                 true,
                 40000,
                 60000
             )
 
             every { postRepository.findById(1L) } returns Optional.of(expectedUpdatedPurchasePost)
+            every { postDateRepository.findAllByPost(any<Post>()) } returns listOf(PostDate(expectedUpdatedPurchasePost, expectedDate))
 
-            val result = postService.updatePost(user.email, info)
+            val result = postService.updatePost(user.uuid.toString(), info)
             Then("수정한 구매 게시글이 반환된다") {
                 assertEquals(expectedUpdatedPurchasePost.type, result.type)
-                assertEquals(expectedUpdatedPurchasePost.category, result.category)
+                assertEquals(expectedUpdatedPurchasePost.category.name, result.category.name)
                 assertEquals(expectedUpdatedPurchasePost.title, result.title)
                 assertEquals(expectedUpdatedPurchasePost.description, result.description)
-                assertEquals(expectedUpdatedPurchasePost.public, result.public)
                 assertEquals(expectedUpdatedPurchasePost.dates.size, result.dates.size)
             }
         }
@@ -166,7 +208,7 @@ class PostServiceTest : BehaviorSpec({
     Given("구매 게시글을 삭제할 때") {
         When("유효한 정보로 구매 게시글을 삭제하면") {
             every { postRepository.delete(any<Post>()) } returns Unit
-            val result = postService.deletePost(user.email, 1L)
+            val result = postService.deletePost(user.uuid.toString(), 1L)
 
             Then("삭제 성공에 대한 결과가 반환된다") {
                 assertEquals(Unit, result)
@@ -185,25 +227,27 @@ class PostServiceTest : BehaviorSpec({
 
     Given("판매 게시글을 생성할 때") {
         When("유효한 정보로 판매 게시글을 생성하면") {
+            val dates: List<DateInfo> = listOf(
+                DateInfo(LocalDate.of(2024, 4, 1), null),
+            )
             val info: PostCreateInfo = postFactory.createPostCreateInfo(
                 PostType.SALE,
-                Category.FOOD,
-                LocalDate.of(2024, 4, 1),
-                LocalDate.of(2024, 4, 3),
+                category.id,
+                dates,
                 true,
                 30000,
                 50000
             )
 
             every { postRepository.save(any<Post>()) } returns expectedSalePost
+            every { postDateRepository.saveAll(any<List<PostDate>>()) } returns listOf(PostDate(expectedSalePost, expectedDate))
 
-            val result = postService.createPost(user.email, info)
+            val result = postService.createPost(user.uuid.toString(), info)
             Then("생성한 판매 게시글이 반환된다") {
                 assertEquals(expectedSalePost.type, result.type)
-                assertEquals(expectedSalePost.category, result.category)
+                assertEquals(expectedSalePost.category.name, result.category.name)
                 assertEquals(expectedSalePost.title, result.title)
                 assertEquals(expectedSalePost.description, result.description)
-                assertEquals(expectedSalePost.public, result.public)
                 assertEquals(expectedSalePost.dates.size, result.dates.size)
             }
         }
@@ -223,7 +267,7 @@ class PostServiceTest : BehaviorSpec({
                 null, null, null, null
             )
             every { postCustomRepository.findAllSalePost(null, null, null, null) } returns salePosts
-            val result = postService.getPosts(info)
+            val result = postService.getPosts(user.uuid.toString(), info)
 
             Then("모든 판매 게시글이 조회된다") {
                 assertEquals(3, result.size)
@@ -237,10 +281,12 @@ class PostServiceTest : BehaviorSpec({
                 null, null, 8000, 12000
             )
             every { postCustomRepository.findAllSalePost(null, null, 8000, 12000) } returns salePosts.filter { it.minPrice <= 12000 && it.maxPrice >= 8000 }
-            val result = postService.getPosts(info)
+            val result = postService.getPosts(user.uuid.toString(), info)
 
             Then("필터 조건에 따른 판매 게시글이 조회된다") {
                 assertEquals(1, result.size)
+                assertEquals(10000, result[0].minPrice)
+                assertEquals(20000, result[0].maxPrice)
             }
         }
     }
@@ -255,26 +301,31 @@ class PostServiceTest : BehaviorSpec({
 
     Given("판매 게시글을 수정할 때") {
         When("유효한 정보로 판매 게시글을 수정하면") {
+            val dates: List<DateInfo> = listOf(
+                DateInfo(LocalDate.of(2024, 5, 1), null),
+                DateInfo(LocalDate.of(2024, 5, 2), null),
+                DateInfo(LocalDate.of(2024, 5, 3), null),
+                DateInfo(LocalDate.of(2024, 5, 4), null)
+            )
             val info: PostUpdateInfo = postFactory.createPostUpdateInfo(
                 PostType.SALE,
                 2L,
-                Category.FOOD,
-                LocalDate.of(2024, 5, 1),
-                LocalDate.of(2024, 5, 4),
+                category.id,
+                dates,
                 true,
                 40000,
                 60000
             )
 
+            every { postDateRepository.findAllByPost(any<Post>()) } returns listOf(PostDate(expectedUpdatedPurchasePost, expectedDate))
             every { postRepository.findById(2L) } returns Optional.of(expectedUpdatedSalePost)
 
-            val result = postService.updatePost(user.email, info)
+            val result = postService.updatePost(user.uuid.toString(), info)
             Then("수정한 판매 게시글이 반환된다") {
                 assertEquals(expectedUpdatedSalePost.type, result.type)
-                assertEquals(expectedUpdatedSalePost.category, result.category)
+                assertEquals(expectedUpdatedSalePost.category.name, result.category.name)
                 assertEquals(expectedUpdatedSalePost.title, result.title)
                 assertEquals(expectedUpdatedSalePost.description, result.description)
-                assertEquals(expectedUpdatedSalePost.public, result.public)
                 assertEquals(expectedUpdatedSalePost.dates.size, result.dates.size)
             }
         }
@@ -289,7 +340,7 @@ class PostServiceTest : BehaviorSpec({
     Given("판매 게시글을 삭제할 때") {
         When("유효한 정보로 판매 게시글을 삭제하면") {
             every { postRepository.delete(any<Post>()) } returns Unit
-            val result = postService.deletePost(user.email, 1L)
+            val result = postService.deletePost(user.uuid.toString(), 1L)
 
             Then("삭제 성공에 대한 결과가 반환된다") {
                 assertEquals(Unit, result)
