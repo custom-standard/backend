@@ -20,25 +20,20 @@ class CustomOAuth2UserService (
     }
 
     private fun process(userRequest: OAuth2UserRequest?, oAuth2User: OAuth2User): OAuth2User {
-        println("CustomOAuth2UserService.process")
         val registrationId: String? = userRequest?.clientRegistration?.registrationId?.uppercase()
         val authProvider: AuthProvider = AuthProvider.valueOf(registrationId ?: "")
         val userInfo: CustomOAuth2User = CustomOAuth2User.of(authProvider, oAuth2User.attributes as Map<String, Any>)
 
-        var user: User? = userStore.findByEmail(userInfo.email)
+        var user: User? = userStore.findByEmailAndProvider(userInfo.email, authProvider)
 
-        if (user != null) {
-            if (authProvider != user.provider) {
-                throw OAuth2AuthenticationException("Wrong OAuth2 provider")
-            }
-        } else {
+        if (user == null) {
             user = createUser(userInfo, authProvider)
         }
-        return CustomUserDetails.create(user, oAuth2User.attributes as Map<String, Object>)
+
+        return CustomUserDetails(user, oAuth2User.attributes as Map<String, Object>)
     }
 
     private fun createUser(userInfo: CustomOAuth2User, authProvider: AuthProvider): User {
-        println("CustomOAuth2UserService.createUser")
         val user: User = User(
             provider = authProvider,
             name = userInfo.name,

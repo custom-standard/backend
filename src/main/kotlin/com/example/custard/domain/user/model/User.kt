@@ -3,6 +3,7 @@ package com.example.custard.domain.user.model
 import com.example.custard.config.auth.oauth2.AuthProvider
 import jakarta.persistence.Entity
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 class User (
@@ -13,7 +14,9 @@ class User (
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = -1
+    val id: Long = 0
+
+    val uuid: UUID = UUID.randomUUID()
 
     val provider: AuthProvider = provider
 

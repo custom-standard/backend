@@ -35,7 +35,6 @@ class OAuth2LoginSuccessHandler (
         response: HttpServletResponse?,
         authentication: Authentication?
     ) {
-        println("OAuth2LoginSuccessHandler.onAuthenticationSuccess")
         clearAuthenticationAttributes(request, response)
         val tokens: Pair<String, String> = createTokens(request, response, authentication)
 

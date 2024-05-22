@@ -37,8 +37,8 @@ class SecurityConfig (
                 request
                     .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                     .requestMatchers("/", "/css/**", "/images/**", "/js/**").permitAll()
-                    .requestMatchers("/api/**").hasRole(Role.ADMIN.name)
-                    .requestMatchers("/api/oauth2/authorize/**", "/oauth2/callback/**").permitAll()
+                    .requestMatchers("/api/oauth2/authorize/**", "/oauth2/callback/**", "/oauth2/redirect/**").permitAll()
+                    .requestMatchers("/api/**").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2Login { it ->

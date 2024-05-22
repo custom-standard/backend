@@ -8,31 +8,16 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 import java.util.*
 
 class CustomUserDetails (
-    val id: Long,
-    private val email: String,
-    private val authorities: Collection<GrantedAuthority>
+    val user: User
 ) : UserDetails, OAuth2User {
     private var attributes: Map<String, Object> = mapOf()
 
-    companion object {
-        private fun create(user: User): CustomUserDetails {
-            val authorities: List<GrantedAuthority> = Collections.singletonList(SimpleGrantedAuthority("ROLE_USER"))
-
-            return CustomUserDetails(
-                user.id,
-                user.email,
-                authorities
-            )
-        }
-
-        fun create(user: User, attributes: Map<String, Object>): CustomUserDetails {
-            val userDetails: CustomUserDetails = CustomUserDetails.create(user);
-            userDetails.setAttributes(attributes)
-            return userDetails
-        }
+    constructor(user: User, attributes: Map<String, Object>): this(user) {
+        this.attributes = attributes
     }
+
     override fun getAuthorities(): Collection<GrantedAuthority> {
-        return authorities
+        return listOf(GrantedAuthority { user.role.name })
     }
 
     override fun getPassword(): String? {
@@ -40,7 +25,7 @@ class CustomUserDetails (
     }
 
     override fun getUsername(): String {
-        return email
+        return user.uuid.toString()
     }
 
     override fun isAccountNonExpired(): Boolean {
@@ -60,14 +45,10 @@ class CustomUserDetails (
     }
 
     override fun getName(): String {
-        return id.toString()
+        return user.name
     }
 
     override fun getAttributes(): Map<String, Object> {
         return attributes
-    }
-
-    fun setAttributes(attributes: Map<String, Object>) {
-        this.attributes = attributes
     }
 }

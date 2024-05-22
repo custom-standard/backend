@@ -45,12 +45,7 @@ class CustomOAuth2User (
         }
 
         private fun ofNaver(attributes: Map<String, Any>): CustomOAuth2User {
-            println("CustomOAuth2User.ofNaver")
             val response: Map<String, Any> = attributes["response"] as Map<String, Any>
-
-            for (attribute in response) {
-                println("key: $attribute.key, value: $attribute.value")
-            }
 
             return CustomOAuth2User(
                 attributes,
