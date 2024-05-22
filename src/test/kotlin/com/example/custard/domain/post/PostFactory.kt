@@ -9,6 +9,7 @@ import com.example.custard.domain.user.model.User
 import java.time.LocalDate
 
 class PostFactory {
+    val category = Category("TEST CATEGORY", "test category")
     val user = User(AuthProvider.KAKAO, "test@test.com", "test", "test")
 
     fun createPost(type: PostType, writer: User, category: Category, title: String, description: String, delivery: Boolean, place: String?, minPrice: Int, maxPrice: Int, product: String?): Post {
@@ -32,9 +33,9 @@ class PostFactory {
         val posts: MutableList<Post> = mutableListOf()
 
         // purchase
-        posts.add(createPost(PostType.PURCHASE, user, Category.FOOD, "title", "description", true, null, 10000, 20000, null))
+        posts.add(createPost(PostType.PURCHASE, user, category, "title", "description", true, null, 10000, 20000, null))
         for (i: Int in 1..<n) {
-            posts.add(createPost(PostType.PURCHASE, user, Category.FOOD, "title", "description", true, null, 30000, 50000, null))
+            posts.add(createPost(PostType.PURCHASE, user, category, "title", "description", true, null, 30000, 50000, null))
         }
 
         return posts
@@ -44,63 +45,60 @@ class PostFactory {
         val posts: MutableList<Post> = mutableListOf()
 
         // sale
-        posts.add(createPost(PostType.SALE, user, Category.FOOD, "title", "description", true, null, 10000, 20000, "temporary product"))
+        posts.add(createPost(PostType.SALE, user, category, "title", "description", true, null, 10000, 20000, "temporary product"))
         for (i: Int in 1..<n) {
-            posts.add(createPost(PostType.SALE, user, Category.FOOD, "title", "description", true, null, 30000, 50000, "temporary product"))
+            posts.add(createPost(PostType.SALE, user, category, "title", "description", true, null, 30000, 50000, "temporary product"))
         }
 
         return posts
     }
 
-    fun createPostCreateInfo(type: PostType, category: Category, startDate: LocalDate, endDate: LocalDate, delivery: Boolean, minPrice: Int, maxPrice: Int): PostCreateInfo {
+    fun createPostCreateInfo(type: PostType, categoryId: Long, dates: List<DateInfo> , delivery: Boolean, minPrice: Int, maxPrice: Int): PostCreateInfo {
         return when (type) {
             PostType.PURCHASE -> PostCreateInfo(
-                category,
+                categoryId,
                 "title",
                 "description",
-                startDate,
-                endDate,
+                dates,
                 delivery,
                 null,
                 minPrice,
                 maxPrice,
             )
             PostType.SALE -> PostCreateInfo(
-                category,
+                categoryId,
                 "title",
                 "description",
-                startDate,
-                endDate,
+                dates,
                 delivery,
                 null,
                 minPrice,
                 maxPrice,
-                "temporary product"
+                1,
             )
         }
     }
 
-    fun createPostUpdateInfo(type: PostType, id: Long, category: Category, startDate: LocalDate, endDate: LocalDate, delivery: Boolean, minPrice: Int, maxPrice: Int): PostUpdateInfo {
+    fun createPostUpdateInfo(type: PostType, id: Long, categoryId: Long, dates: List<DateInfo>, delivery: Boolean, minPrice: Int, maxPrice: Int): PostUpdateInfo {
         return when (type) {
             PostType.PURCHASE -> PostUpdateInfo(
                 id,
-                category,
+                categoryId,
                 "updated title",
                 "updated description",
-                startDate,
-                endDate,
+                dates,
                 delivery,
                 null,
                 minPrice,
                 maxPrice,
+                null,
             )
             PostType.SALE -> PostUpdateInfo(
                 id,
-                category,
+                categoryId,
                 "updated title",
                 "updated description",
-                startDate,
-                endDate,
+                dates,
                 delivery,
                 null,
                 minPrice,
@@ -110,18 +108,22 @@ class PostFactory {
         }
     }
 
-    fun createPostReadInfo(type: PostType, category: Category?, date: LocalDate?, minPrice: Int?, maxPrice: Int?): PostReadInfo {
+    fun createPostReadInfo(type: PostType, categoryId: Long?, date: LocalDate?, minPrice: Int?, maxPrice: Int?): PostReadInfo {
         return when (type) {
             PostType.PURCHASE -> PostReadInfo(
+                0,
+                5,
                 type,
-                category,
+                categoryId,
                 date,
                 minPrice,
                 maxPrice
             )
             PostType.SALE -> PostReadInfo(
+                0,
+                5,
                 type,
-                category,
+                categoryId,
                 date,
                 minPrice,
                 maxPrice
