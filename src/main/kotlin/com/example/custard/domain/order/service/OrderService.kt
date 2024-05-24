@@ -11,7 +11,7 @@ class OrderService (
     private val userStore: UserStore,
 ) {
     private fun validateUser(user: User, order: Order) {
-        if (Order.client != user || Order.creator != user) {
+        if (!order.hasParticipant(user)) {
             // TODO: Exception 처리
             throw RuntimeException("해당 주문에 대한 권한이 존재하지 않습니다.")
         }
@@ -45,13 +45,10 @@ class OrderService (
     }
 
     fun createOrder(userUUID: String, info: OrderCreateInfo): OrderDetailResponse {
-        val user: User = userStore.getByUUID(userUUID)
-        val other: User = userStore.getByUUID(info.otherUUID)
+        val requester: User = userStore.getByUUID(userUUID)
+        val responder: User = userStore.getByUUID(info.otherUUID)
 
-        val order: Order = when (info.position) {
-            OrderPosition.CLIENT -> order = OrderCreateInfo.toEntity(info, client = user, creator = other)
-            OrderPosition.CREATOR -> order = OrderCreateInfo.toEntity(info, client = other, creator = user)
-        }
+        val order: Order = OrderCreateInfo.toEntity(info, requester, responder)
 
         orderStore.saveOrder(order)
 
