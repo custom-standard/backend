@@ -10,6 +10,7 @@ interface PostStore {
     fun savePost(post: Post): Post
 
     // TODO: 지역 필터링 추가
+    fun findById(id: Long): Post?
     fun getById(id: Long): Post
     fun findAllPurchasePost(category: Category?, date: LocalDate?, minPrice: Int?, maxPrice: Int?): List<Post>
     fun findAllSalePost(category: Category?, date: LocalDate?, minPrice: Int?, maxPrice: Int?): List<Post>

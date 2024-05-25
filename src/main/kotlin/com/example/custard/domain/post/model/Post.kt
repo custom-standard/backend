@@ -95,4 +95,8 @@ class Post (
     fun updatePublic(public: Boolean) {
         this.public = public
     }
+
+    fun isWriter(user: User): Boolean {
+        return writer == user
+    }
 }
