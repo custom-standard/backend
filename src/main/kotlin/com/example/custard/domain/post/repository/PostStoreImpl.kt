@@ -20,10 +20,6 @@ class PostStoreImpl (
         return postRepository.save(post)
     }
 
-    override fun findById(id: Long): Post? {
-        return postRepository.findById(id).orElse(null)
-    }
-
     override fun getById(id: Long): Post {
         return postRepository.findById(id)
             .orElseThrow { NoSuchPostException("ID가 $id 인 게시글을 찾을 수 없습니다.")}
