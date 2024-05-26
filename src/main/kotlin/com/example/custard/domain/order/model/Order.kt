@@ -11,6 +11,8 @@ class Order (
     post: Post,
     requester: User,
     responder: User,
+    price: Int,
+    date: Date,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -28,10 +30,10 @@ class Order (
     @ManyToOne(fetch = FetchType.LAZY)
     val responder: User = responder
 
-    var price: Int? = null
+    var price: Int = price
 
     @ManyToOne(fetch = FetchType.LAZY)
-    var date: Date? = null
+    var date: Date = date
 
     var status: OrderStatus = OrderStatus.WAITING
 
@@ -60,6 +62,10 @@ class Order (
 
     fun hasParticipant(user: User): Boolean {
         return requester == user || responder == user
+    }
+
+    fun isRequester(user: User): Boolean {
+        return requester == user
     }
 
     fun validateResponder(user: User) {
