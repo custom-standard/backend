@@ -7,6 +7,7 @@ import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "orders")
 class Order (
     post: Post,
     requester: User,
