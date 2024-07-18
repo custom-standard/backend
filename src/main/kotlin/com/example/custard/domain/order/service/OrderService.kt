@@ -18,18 +18,11 @@ class OrderService (
     private val postStore: PostStore,
     private val userStore: UserStore,
 ) {
-    private fun validateUser(user: User, order: Order) {
-        if (!order.hasParticipant(user)) {
-            // TODO: Exception 처리
-            throw RuntimeException("해당 주문에 대한 권한이 존재하지 않습니다.")
-        }
-    }
-
     fun getOrder(userUUID: String, orderId: Long): OrderResponse {
         val user: User = userStore.getByUUID(userUUID)
         val order: Order = orderStore.getById(orderId)
 
-        validateUser(user, order)
+        order.validateParticipant(user)
 
         return OrderResponse.of(order, order.isRequester(user))
     }
@@ -81,7 +74,7 @@ class OrderService (
         val user: User = userStore.getByUUID(userUUID)
         val order: Order = orderStore.getById(info.orderId)
 
-        validateUser(user, order)
+        order.validateCreator(user)
 
         if (info.forward) { order.forwardStatus() } else { order.backwardStatus() }
 
@@ -92,7 +85,7 @@ class OrderService (
         val user: User = userStore.getByUUID(userUUID)
         val order: Order = orderStore.getById(info.orderId)
 
-        validateUser(user, order)
+        order.validateCreator(user)
         // TODO: Order에 대해 승낙된 Propose 검증 후 Order 수정
 
         return OrderResponse.of(order, order.isRequester(user))
@@ -102,7 +95,7 @@ class OrderService (
         val user: User = userStore.getByUUID(userUUID)
         val order: Order = orderStore.getById(orderId)
 
-        validateUser(user, order)
+        order.validateRequester(user)
 
         orderStore.deleteOrder(order)
     }

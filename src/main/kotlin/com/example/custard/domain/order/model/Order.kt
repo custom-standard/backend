@@ -67,12 +67,40 @@ class Order (
         status = status.stepBackward() ?: status
     }
 
-    fun hasParticipant(user: User): Boolean {
-        return requester == user || responder == user
-    }
-
     fun isRequester(user: User): Boolean {
         return requester == user
+    }
+
+    private fun isResponder(user: User): Boolean {
+        return responder == user
+    }
+
+    private fun isCreator(user: User): Boolean {
+        return ((requester == user) && (roleRequester == OrderPosition.CREATOR)) ||
+                ((responder == user) && (roleResponder == OrderPosition.CREATOR))
+    }
+
+    private fun isClient(user: User): Boolean {
+        return ((requester == user) && (roleRequester == OrderPosition.CLIENT)) ||
+                ((responder == user) && (roleResponder == OrderPosition.CLIENT))
+    }
+
+    fun validateParticipant(user: User) {
+        if (!isRequester(user) && !isResponder(user)) {
+            throw RuntimeException("해당 주문에 참여자가 아닙니다.")
+        }
+    }
+
+    fun validateCreator(user: User) {
+        if (!isCreator(user)) {
+            throw RuntimeException("해당 주문에 대한 상품 제작자가 아닙니다.")
+        }
+    }
+
+    fun validateRequester(user: User) {
+        if (requester != user) {
+            throw RuntimeException("해당 주문에 대한 요청자가 아닙니다.")
+        }
     }
 
     fun validateResponder(user: User) {
