@@ -10,7 +10,6 @@ class PostDate (
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_date_id")
     val id: Long = 0L
 
     @ManyToOne(fetch = FetchType.LAZY)

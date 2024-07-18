@@ -11,7 +11,6 @@ class Date (
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "date_id")
     val id: Long = 0L
 
     val date: LocalDate = date
