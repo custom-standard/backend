@@ -99,4 +99,8 @@ class Post (
     fun isWriter(user: User): Boolean {
         return writer == user
     }
+
+    fun isSale(): Boolean {
+        return type == PostType.SALE
+    }
 }

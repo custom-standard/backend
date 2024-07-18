@@ -1,5 +1,6 @@
 package com.example.custard.domain.order.model
 
+import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.date.Date
@@ -12,6 +13,8 @@ class Order (
     post: Post,
     requester: User,
     responder: User,
+    roleRequester: OrderPosition,
+    roleResponder: OrderPosition,
     price: Int,
     date: Date,
 ) {
@@ -30,6 +33,9 @@ class Order (
 
     @ManyToOne(fetch = FetchType.LAZY)
     val responder: User = responder
+
+    val roleRequester: OrderPosition = roleRequester
+    val roleResponder: OrderPosition = roleRequester
 
     var price: Int = price
 
