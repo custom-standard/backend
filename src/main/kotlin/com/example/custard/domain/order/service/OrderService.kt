@@ -61,11 +61,11 @@ class OrderService (
         return OrderResponse.of(order, order.isRequester(requester))
     }
 
-    fun respondOrder(userUUID: String, orderId: Long, accept: Boolean): OrderResponse {
+    fun confirmOrder(userUUID: String, orderId: Long, accept: Boolean): OrderResponse {
         val user: User = userStore.getByUUID(userUUID)
         val order: Order = orderStore.getById(orderId)
 
-        order.respondOrder(user, accept)
+        order.confirmOrder(user, accept)
 
         return OrderResponse.of(order, order.isRequester(user))
     }

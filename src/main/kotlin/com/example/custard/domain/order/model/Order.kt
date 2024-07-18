@@ -21,10 +21,6 @@ class Order (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    /*
-     PostType이 PURCHASE일 경우, requester 판매자, responder(게시글 작성자)가 구매자
-     PostType이 SALE일 경우, requester 구매자, responder(게시글 작성자)가 판매자
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     val post: Post = post
 
@@ -49,7 +45,7 @@ class Order (
         this.date = date
     }
 
-    fun respondOrder(responder: User, accept: Boolean) {
+    fun confirmOrder(responder: User, accept: Boolean) {
         validateResponder(responder)
 
         if (status == OrderStatus.WAITING) {
