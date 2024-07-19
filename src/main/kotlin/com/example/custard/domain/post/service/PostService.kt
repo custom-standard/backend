@@ -1,12 +1,13 @@
 package com.example.custard.domain.post.service
 
+import com.example.custard.domain.common.date.dto.DateInfo
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
 import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
-import com.example.custard.domain.post.model.date.PostDate
+import com.example.custard.domain.post.model.PostDate
 import com.example.custard.domain.post.service.category.CategoryStore
 import com.example.custard.domain.post.service.date.PostDateStore
 import com.example.custard.domain.user.model.User

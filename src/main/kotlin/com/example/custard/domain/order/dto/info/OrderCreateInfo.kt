@@ -2,7 +2,7 @@ package com.example.custard.domain.order.dto.info
 
 import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.model.Order
-import com.example.custard.domain.post.dto.info.DateInfo
+import com.example.custard.domain.common.date.dto.DateInfo
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.user.model.User
 

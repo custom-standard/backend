@@ -1,8 +1,6 @@
 package com.example.custard.domain.post.dto.info
 
-import com.example.custard.domain.post.model.Category
-import com.example.custard.domain.post.model.PostType
-import java.time.LocalDate
+import com.example.custard.domain.common.date.dto.DateInfo
 
 open class PostUpdateInfo (
     val id: Long,

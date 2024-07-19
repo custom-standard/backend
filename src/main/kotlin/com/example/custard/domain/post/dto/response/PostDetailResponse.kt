@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.dto.response
 
+import com.example.custard.domain.common.date.dto.DateResponse
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
 import com.example.custard.domain.user.dto.response.UserResponse

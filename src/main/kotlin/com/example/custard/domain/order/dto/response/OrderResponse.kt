@@ -2,7 +2,7 @@ package com.example.custard.domain.order.dto.response
 
 import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.model.Order
-import com.example.custard.domain.post.dto.response.DateResponse
+import com.example.custard.domain.common.date.dto.DateResponse
 import com.example.custard.domain.post.dto.response.PostSimpleResponse
 import com.example.custard.domain.user.dto.response.UserResponse
 

@@ -1,9 +1,9 @@
 package com.example.custard.domain.post.repository.date
 
 import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.post.model.date.Date
-import com.example.custard.domain.post.model.date.PostDate
-import com.example.custard.domain.post.service.date.DateStore
+import com.example.custard.domain.common.date.Date
+import com.example.custard.domain.post.model.PostDate
+import com.example.custard.domain.common.date.DateStore
 import com.example.custard.domain.post.service.date.PostDateStore
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

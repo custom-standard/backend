@@ -1,7 +1,7 @@
 package com.example.custard.domain.order.dto.request
 
 import com.example.custard.domain.order.dto.info.OrderCreateInfo
-import com.example.custard.domain.post.dto.request.DateRequest
+import com.example.custard.domain.common.date.dto.DateRequest
 
 class OrderCreateRequest (
     val postId: Long,

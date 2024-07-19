@@ -5,7 +5,7 @@ import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.exception.InvalidOrderStateException
 import com.example.custard.domain.order.exception.OrderForbiddenException
 import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.post.model.date.Date
+import com.example.custard.domain.common.date.Date
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 

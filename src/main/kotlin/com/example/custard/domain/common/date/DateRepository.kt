@@ -1,6 +1,6 @@
-package com.example.custard.domain.post.repository.date
+package com.example.custard.domain.common.date
 
-import com.example.custard.domain.post.model.date.Date
+import com.example.custard.domain.common.date.Date
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
