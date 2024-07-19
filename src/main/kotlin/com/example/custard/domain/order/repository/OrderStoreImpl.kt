@@ -2,6 +2,7 @@ package com.example.custard.domain.order.repository
 
 import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.enums.OrderStatus
+import com.example.custard.domain.order.exception.NoSuchOrderException
 import com.example.custard.domain.order.model.Order
 import com.example.custard.domain.order.service.OrderStore
 import com.example.custard.domain.post.model.Post
@@ -19,8 +20,7 @@ class OrderStoreImpl (
 ) : OrderStore {
     override fun getById(orderId: Long): Order {
         return orderRepository.findById(orderId)
-            // TODO: Exception 처리
-            .orElseThrow { RuntimeException("해당 주문이 존재하지 않습니다.") }
+            .orElseThrow { NoSuchOrderException("해당 주문이 존재하지 않습니다.") }
     }
 
     override fun getOrders(

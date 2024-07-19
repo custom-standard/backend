@@ -27,7 +27,6 @@ class OrderService (
         return OrderResponse.of(order, order.isRequester(user))
     }
 
-    // 내 거만 (필터: status, 카테고리, 판매자/구매자) 아니면 게시글에 따라서 필터
     fun getOrders(userUUID: String, info: OrderReadInfo): Page<OrderResponse> {
         val user: User = userStore.getByUUID(userUUID)
         val post: Post? = info.postId?.let { postStore.getById(it) }

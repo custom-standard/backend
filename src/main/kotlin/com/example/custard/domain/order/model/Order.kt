@@ -2,6 +2,8 @@ package com.example.custard.domain.order.model
 
 import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.enums.OrderStatus
+import com.example.custard.domain.order.exception.InvalidOrderStateException
+import com.example.custard.domain.order.exception.OrderForbiddenException
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.date.Date
 import com.example.custard.domain.user.model.User
@@ -51,7 +53,7 @@ class Order (
         if (status == OrderStatus.WAITING) {
             if (accept) { forwardStatus() } else { backwardStatus() }
         } else {
-            throw RuntimeException("이미 ${status.description} 단계인 주문입니다.")
+            throw InvalidOrderStateException("이미 ${status.description} 단계인 주문입니다.")
         }
     }
 
@@ -83,25 +85,25 @@ class Order (
 
     fun validateParticipant(user: User) {
         if (!isRequester(user) && !isResponder(user)) {
-            throw RuntimeException("해당 주문에 참여자가 아닙니다.")
+            throw OrderForbiddenException("해당 주문에 참여자가 아닙니다.")
         }
     }
 
     fun validateCreator(user: User) {
         if (!isCreator(user)) {
-            throw RuntimeException("해당 주문에 대한 상품 제작자가 아닙니다.")
+            throw OrderForbiddenException("해당 주문에 대한 상품 제작자가 아닙니다.")
         }
     }
 
     fun validateRequester(user: User) {
         if (requester != user) {
-            throw RuntimeException("해당 주문에 대한 요청자가 아닙니다.")
+            throw OrderForbiddenException("해당 주문에 대한 요청자가 아닙니다.")
         }
     }
 
     fun validateResponder(user: User) {
         if (responder != user) {
-            throw RuntimeException("해당 주문에 대한 응답자가 아닙니다.")
+            throw OrderForbiddenException("해당 주문에 대한 응답자가 아닙니다.")
         }
     }
 }
