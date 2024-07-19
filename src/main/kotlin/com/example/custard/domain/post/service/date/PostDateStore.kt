@@ -1,8 +1,8 @@
 package com.example.custard.domain.post.service.date
 
 import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.post.model.date.Date
-import com.example.custard.domain.post.model.date.PostDate
+import com.example.custard.domain.common.date.Date
+import com.example.custard.domain.post.model.PostDate
 
 interface PostDateStore {
     fun existsPostDateByDate(date: Date): Boolean

@@ -1,6 +1,6 @@
-package com.example.custard.domain.post.dto.request
+package com.example.custard.domain.common.date.dto
 
-import com.example.custard.domain.post.dto.info.DateInfo
+import com.example.custard.domain.common.date.dto.DateInfo
 import java.time.LocalDate
 import java.time.LocalTime
 

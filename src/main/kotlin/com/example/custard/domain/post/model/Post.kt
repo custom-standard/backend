@@ -1,6 +1,5 @@
 package com.example.custard.domain.post.model
 
-import com.example.custard.domain.post.model.date.PostDate
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
@@ -94,5 +93,13 @@ class Post (
 
     fun updatePublic(public: Boolean) {
         this.public = public
+    }
+
+    fun isWriter(user: User): Boolean {
+        return writer == user
+    }
+
+    fun isSale(): Boolean {
+        return type == PostType.SALE
     }
 }

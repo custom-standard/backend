@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.dto.info
 
+import com.example.custard.domain.common.date.dto.DateInfo
 import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
