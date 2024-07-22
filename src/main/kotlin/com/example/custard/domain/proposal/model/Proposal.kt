@@ -1,4 +1,4 @@
-package com.example.custard.domain.propose.model
+package com.example.custard.domain.proposal.model
 
 import com.example.custard.domain.order.model.Order
 import com.example.custard.domain.common.date.Date
@@ -6,7 +6,7 @@ import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
 @Entity
-class Propose(
+class Proposal(
     order: Order,
     sender: User,
     receiver: User,
@@ -29,4 +29,11 @@ class Propose(
 
     @ManyToOne(fetch = FetchType.LAZY)
     val date: Date = date
+
+    var accept: Boolean = false
+        protected set
+
+    fun acceptProposal() {
+        accept = true
+    }
 }
