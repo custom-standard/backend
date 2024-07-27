@@ -65,6 +65,10 @@ class Order (
         status = status.stepBackward() ?: status
     }
 
+    fun getOtherUser(user: User): User {
+        return if (requester == user) responder else requester
+    }
+
     fun isRequester(user: User): Boolean {
         return requester == user
     }
