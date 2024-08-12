@@ -4,6 +4,7 @@ import com.example.custard.domain.common.date.dto.DateInfo
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
+import com.example.custard.domain.post.exception.PostForbiddenException
 import com.example.custard.domain.post.model.Category
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
@@ -62,15 +63,12 @@ class PostService(
 
     /* 게시글 수정 */
     fun updatePost(userUUID: String, info: PostUpdateInfo): PostDetailResponse {
-        val writer: User = userStore.getByUUID(userUUID)
+        val user: User = userStore.getByUUID(userUUID)
 
         val id: Long = info.id
         val post: Post = postStore.getById(id)
 
-        if (post.writer.id != writer.id) {
-            // TODO: 예외 처리
-            throw RuntimeException("해당 게시글의 수정 권한이 없습니다.")
-        }
+        post.validateWriter(user)
 
         val category: Category = categoryStore.getCategory(info.categoryId)
         val title: String = info.title
@@ -91,13 +89,10 @@ class PostService(
 
     /* 게시글 삭제 */
     fun deletePost(userUUID: String, id: Long) {
-        val writer: User = userStore.getByUUID(userUUID)
+        val user: User = userStore.getByUUID(userUUID)
         val post: Post = postStore.getById(id)
 
-        if (post.writer.id != writer.id) {
-            // TODO: 예외 처리
-            throw RuntimeException("해당 게시글의 삭제 권한이 없습니다.")
-        }
+        post.validateWriter(user)
 
         postDateStore.deleteAllByPost(post)
         postStore.deletePost(post)

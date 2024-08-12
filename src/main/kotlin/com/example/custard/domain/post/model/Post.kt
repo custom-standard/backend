@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.model
 
+import com.example.custard.domain.post.exception.PostForbiddenException
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
@@ -101,5 +102,11 @@ class Post (
 
     fun isSale(): Boolean {
         return type == PostType.SALE
+    }
+
+    fun validateWriter(user: User) {
+        if (!isWriter(user)) {
+            throw PostForbiddenException("해당 게시글의 작성자가 아닙니다.")
+        }
     }
 }
