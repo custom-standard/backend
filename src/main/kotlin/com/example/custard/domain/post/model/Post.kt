@@ -44,8 +44,8 @@ class Post (
     var description: String = description
         protected set
 
-    @OneToMany(mappedBy = "post")
-    var dates: MutableList<PostDate> = mutableListOf()
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var dates = mutableListOf<PostDate>()
         protected set
 
     var delivery: Boolean = delivery
