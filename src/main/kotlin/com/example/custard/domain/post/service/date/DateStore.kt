@@ -1,6 +1,7 @@
-package com.example.custard.domain.common.date
+package com.example.custard.domain.post.service.date
 
 import com.example.custard.domain.common.date.dto.DateInfo
+import com.example.custard.domain.post.model.Date
 
 interface DateStore {
     fun saveDateIfNotExists(date: Date): Date

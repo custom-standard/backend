@@ -12,7 +12,5 @@ open class PostUpdateInfo (
     val place: String?,
     val minPrice: Int,
     val maxPrice: Int,
-    // *** only for sale post ***
-    val product: String?
 ) {
 }

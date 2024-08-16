@@ -14,11 +14,9 @@ class PostUpdateRequest (
     val place: String?,
     val minPrice: Int,
     val maxPrice: Int,
-    // TODO: Product Entity 생성 후 id로 변경
-    val product: String?
 ) {
     fun createInfo(): PostUpdateInfo {
         val datesInfo: List<DateInfo> = dates.map { date -> date.createInfo() }
-        return PostUpdateInfo(postId, categoryId, title, description, datesInfo, delivery, place, minPrice, maxPrice, product)
+        return PostUpdateInfo(postId, categoryId, title, description, datesInfo, delivery, place, minPrice, maxPrice)
     }
 }

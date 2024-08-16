@@ -1,4 +1,4 @@
-package com.example.custard.domain.common.date
+package com.example.custard.domain.post.model
 
 import jakarta.persistence.*
 import java.time.LocalDate
