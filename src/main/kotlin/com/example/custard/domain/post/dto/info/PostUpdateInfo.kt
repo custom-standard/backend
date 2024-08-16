@@ -1,7 +1,5 @@
 package com.example.custard.domain.post.dto.info
 
-import com.example.custard.domain.common.date.dto.DateInfo
-
 open class PostUpdateInfo (
     val id: Long,
     val categoryId: Long,
