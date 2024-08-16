@@ -78,11 +78,9 @@ class PostService(
         val place: String? = info.place
         val minPrice: Int = info.minPrice
         val maxPrice: Int = info.maxPrice
-        // *** only for sale post ***
-        val product: String? = info.product
 
         updateDates(post, dates)
-        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice, product)
+        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice)
 
         return PostDetailResponse.of(post)
     }
