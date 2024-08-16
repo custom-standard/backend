@@ -13,10 +13,7 @@ import com.example.custard.domain.post.repository.PostRepository
 import com.example.custard.domain.post.repository.PostStoreImpl
 import com.example.custard.domain.post.repository.category.CategoryRepository
 import com.example.custard.domain.post.repository.category.CategoryStoreImpl
-import com.example.custard.domain.post.repository.date.PostDateRepository
-import com.example.custard.domain.post.repository.date.PostDateStoreImpl
 import com.example.custard.domain.post.service.category.CategoryStore
-import com.example.custard.domain.post.service.date.PostDateStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.repository.UserRepository
 import com.example.custard.domain.user.repository.UserStoreImpl
@@ -26,23 +23,22 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Optional
 
 class PostServiceTest : BehaviorSpec({
     val postRepository: PostRepository = mockk<PostRepository>()
     val postCustomRepository: PostCustomRepository = mockk<PostCustomRepository>()
-    val postDateRepository: PostDateRepository = mockk<PostDateRepository>()
     val dateRepository: DateRepository = mockk<DateRepository>()
     val userRepository: UserRepository = mockk<UserRepository>()
     val categoryRepository: CategoryRepository = mockk<CategoryRepository>()
 
     val postStore: PostStore = PostStoreImpl(postRepository, postCustomRepository)
     val dateStore: DateStore = DateStoreImpl(dateRepository)
-    val postDateStore: PostDateStore = PostDateStoreImpl(postDateRepository, dateStore)
     val categoryStore: CategoryStore = CategoryStoreImpl(categoryRepository)
 
     val userStore: UserStore = UserStoreImpl(userRepository)
-    val postService: PostService = PostService(postStore, postDateStore, userStore, categoryStore)
+    val postService: PostService = PostService(postStore, dateStore, userStore, categoryStore)
 
     every { userRepository.findByUuid(UserFixtures.testUser.uuid) } returns UserFixtures.testUser
     every { userRepository.findByUuid(UserFixtures.seller.uuid) } returns UserFixtures.seller
@@ -72,9 +68,9 @@ class PostServiceTest : BehaviorSpec({
         When("유효한 정보로 게시글을 생성하면") {
             every { postRepository.save(any<Post>()) } returns PostFixtures.salePost
             every { dateRepository.saveAll(any<List<Date>>()) } returns DateFixtures.dateEntities
-            every { postDateRepository.saveAll(any<List<PostDate>>()) } returns PostDateFixtures.postDates
             every { dateRepository.existsDateByDateAndTime(any< LocalDate>(), any()) } returns false
             every { dateRepository.save(any<Date>()) } returnsMany DateFixtures.dateEntities
+            every { dateRepository.findByDateAndTime(any<LocalDate>(), any<LocalTime>()) } returns null
 
             val result = postService.createPost(UserFixtures.buyer.uuid.toString(), PostFixtures.salePostCreateInfo)
             val expectedPost = PostFixtures.salePost
@@ -165,13 +161,13 @@ class PostServiceTest : BehaviorSpec({
     Given("게시글을 수정할 때") {
         When("유효한 정보로 게시글을 수정하면") {
             every { postRepository.findById(1L) } returns Optional.of(PostFixtures.salePost)
-            every { postDateRepository.findAllByPost(PostFixtures.salePost) } returns PostDateFixtures.postDates
-            every { postDateRepository.deleteAll(any<List<PostDate>>()) } returns Unit
-            every { postDateRepository.existsPostDateByDate(any<Date>()) } returns false
             every { dateRepository.delete(any<Date>()) } returns Unit
 
             val result = postService.updatePost(UserFixtures.seller.uuid.toString(), PostFixtures.salePostUpdateInfo)
             val expectedPost = PostFixtures.modifiedSalePost
+
+            val postDates = DateFixtures.dateEntities.map { PostDate(expectedPost, it) }
+            expectedPost.updateDates(postDates.toMutableList())
 
             Then("수정한 게시글이 반환된다") {
                 assertEquals(expectedPost.type, result.type)
@@ -190,8 +186,6 @@ class PostServiceTest : BehaviorSpec({
     Given("게시글을 삭제할 때") {
         When("유효한 정보로 게시글을 삭제하면") {
             every { postRepository.delete(PostFixtures.salePost) } returns Unit
-            every { postDateRepository.deleteAll(any<List<PostDate>>()) } returns Unit
-            every { postDateRepository.existsPostDateByDate(any<Date>()) } returns false
             every { dateRepository.delete(any<Date>()) } returns Unit
 
             val result = postService.deletePost(UserFixtures.seller.uuid.toString(), 1L)
