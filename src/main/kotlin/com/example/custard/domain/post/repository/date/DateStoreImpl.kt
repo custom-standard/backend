@@ -1,5 +1,7 @@
-package com.example.custard.domain.common.date;
+package com.example.custard.domain.post.repository.date;
 
+import com.example.custard.domain.post.model.Date
+import com.example.custard.domain.post.service.date.DateStore
 import com.example.custard.domain.common.date.dto.DateInfo
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

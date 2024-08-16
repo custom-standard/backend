@@ -1,7 +1,7 @@
 package com.example.custard.domain.post.service
 
-import com.example.custard.domain.common.date.Date
-import com.example.custard.domain.common.date.DateStore
+import com.example.custard.domain.post.model.Date
+import com.example.custard.domain.post.service.date.DateStore
 import com.example.custard.domain.common.date.dto.DateInfo
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse

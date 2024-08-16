@@ -1,7 +1,5 @@
 package com.example.custard.domain.post.model
 
-import com.example.custard.domain.common.date.Date
-import com.example.custard.domain.post.model.Post
 import jakarta.persistence.*
 
 @Entity
