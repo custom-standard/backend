@@ -5,7 +5,6 @@ import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.exception.InvalidOrderStateException
 import com.example.custard.domain.order.exception.OrderForbiddenException
 import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.common.date.Date
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
@@ -18,7 +17,6 @@ class Order (
     roleRequester: OrderPosition,
     roleResponder: OrderPosition,
     price: Int,
-    date: Date,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -37,14 +35,18 @@ class Order (
 
     var price: Int = price
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    var date: Date = date
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val dates: MutableList<OrderDate> = mutableListOf()
 
     var status: OrderStatus = OrderStatus.WAITING
 
-    fun updateOrder(price: Int, date: Date) {
+    fun updateDates(dates: MutableList<OrderDate>) {
+        this.dates.retainAll(dates)
+        this.dates.addAll(dates)
+    }
+    fun updateOrder(price: Int, dates: MutableList<OrderDate>) {
         this.price = price
-        this.date = date
+        updateDates(dates)
     }
 
     fun confirmOrder(responder: User, accept: Boolean) {
