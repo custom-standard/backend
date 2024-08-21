@@ -1,8 +1,7 @@
 package com.example.custard.domain.post.dto.request
 
+import com.example.custard.domain.post.dto.info.DateInfo
 import com.example.custard.domain.post.dto.info.PostCreateInfo
-import com.example.custard.domain.common.date.dto.DateInfo
-import com.example.custard.domain.common.date.dto.DateRequest
 import com.example.custard.domain.post.model.PostType
 
 class PostCreateRequest (
