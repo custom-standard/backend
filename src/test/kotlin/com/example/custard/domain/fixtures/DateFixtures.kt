@@ -1,7 +1,7 @@
 package com.example.custard.domain.fixtures
 
-import com.example.custard.domain.common.date.Date
-import com.example.custard.domain.common.date.dto.DateInfo
+import com.example.custard.domain.post.dto.info.DateInfo
+import com.example.custard.domain.post.model.Date
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

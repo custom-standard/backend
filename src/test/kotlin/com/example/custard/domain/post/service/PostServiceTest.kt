@@ -1,11 +1,8 @@
 package com.example.custard.domain.post.service
 
-import com.example.custard.domain.common.date.Date
-import com.example.custard.domain.common.date.DateRepository
-import com.example.custard.domain.common.date.DateStore
-import com.example.custard.domain.common.date.DateStoreImpl
 import com.example.custard.domain.fixtures.*
 import com.example.custard.domain.post.model.Category
+import com.example.custard.domain.post.model.Date
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostDate
 import com.example.custard.domain.post.repository.PostCustomRepository
@@ -13,7 +10,10 @@ import com.example.custard.domain.post.repository.PostRepository
 import com.example.custard.domain.post.repository.PostStoreImpl
 import com.example.custard.domain.post.repository.category.CategoryRepository
 import com.example.custard.domain.post.repository.category.CategoryStoreImpl
+import com.example.custard.domain.post.repository.date.DateRepository
+import com.example.custard.domain.post.repository.date.DateStoreImpl
 import com.example.custard.domain.post.service.category.CategoryStore
+import com.example.custard.domain.post.service.date.DateStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.repository.UserRepository
 import com.example.custard.domain.user.repository.UserStoreImpl
