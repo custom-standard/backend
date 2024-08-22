@@ -102,8 +102,7 @@ class OrderService (
 
         proposal.validateProposal(order, user)
 
-        // TODO: Date, Time of Proposal 수정
-        val date: OrderDate = OrderDate(order, proposal.date.toLocalDate(), null)
+        val date: OrderDate = OrderDate(order, proposal.date.date, proposal.date.time)
 
         order.updateOrder(proposal.price, mutableListOf(date))
 

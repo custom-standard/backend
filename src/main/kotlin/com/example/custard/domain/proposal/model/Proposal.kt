@@ -1,12 +1,13 @@
 package com.example.custard.domain.proposal.model
 
 import com.example.custard.domain.order.model.Order
-import com.example.custard.domain.common.date.Date
 import com.example.custard.domain.proposal.enums.ProposalStatus
 import com.example.custard.domain.proposal.exception.InvalidProposalStatusException
 import com.example.custard.domain.proposal.exception.ProposalForbiddenException
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Entity
 class Proposal(
@@ -14,7 +15,8 @@ class Proposal(
     sender: User,
     receiver: User,
     price: Int,
-    date: Date,
+    date: LocalDate,
+    time: LocalTime?,
     message: String?,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +33,8 @@ class Proposal(
 
     val price: Int = price
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    val date: Date = date
+    @Embedded
+    val date: ProposalDate = ProposalDate(date, time)
 
     val message: String? = message
 
@@ -45,9 +47,21 @@ class Proposal(
         status = if (accept) ProposalStatus.ACCEPTED else ProposalStatus.REJECTED
     }
 
+    private fun validateOrder(order: Order) {
+        if (this.order != order) {
+            throw ProposalForbiddenException("해당 주문에 대한 제안이 아닙니다.")
+        }
+    }
+
     fun validateIsPending() {
         if (status != ProposalStatus.PENDING) {
             throw InvalidProposalStatusException("이미 처리된 제안입니다.")
+        }
+    }
+
+    private fun validateIsAccepted() {
+        if (status != ProposalStatus.ACCEPTED) {
+            throw InvalidProposalStatusException("수락된 제안이 아닙니다.")
         }
     }
 
@@ -61,5 +75,11 @@ class Proposal(
         if (receiver != user) {
             throw ProposalForbiddenException("제안을 받은 사용자가 아닙니다.")
         }
+    }
+
+    fun validateProposal(order: Order, user: User) {
+        validateOrder(order)
+        validateReceiver(user)
+        validateIsAccepted()
     }
 }
