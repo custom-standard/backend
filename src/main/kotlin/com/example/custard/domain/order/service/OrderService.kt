@@ -36,17 +36,12 @@ class OrderService (
         val user: User = userStore.getByUUID(userUUID)
         val post: Post? = info.postId?.let { postStore.getById(it) }
 
-
-        if (post != null && !post.isWriter(user)) {
-            // TODO: Post Exception 처리
-            throw RuntimeException("해당 게시물에 대한 작성자가 아닙니다.")
-        }
+        post?.let { post.validateWriter(user) }
 
         val page: Int = info.page
         val size: Int = info.size
         val position: OrderPosition = info.position
 
-        // 필터 조건
         val status: OrderStatus? = info.status
 
         val orders: Page<Order> = orderStore.getOrders(page, size, position, user, post, status)
