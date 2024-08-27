@@ -1,19 +1,18 @@
 package com.example.custard.domain.post.service
 
-import com.example.custard.domain.post.model.Date
+import com.example.custard.domain.common.file.File
+import com.example.custard.domain.common.file.FileStore
 import com.example.custard.domain.post.service.date.DateStore
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
-import com.example.custard.domain.post.model.Category
-import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.post.model.PostType
-import com.example.custard.domain.post.model.PostDate
+import com.example.custard.domain.post.model.*
 import com.example.custard.domain.post.service.category.CategoryStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.service.UserStore
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Service
@@ -21,7 +20,8 @@ class PostService(
     private val postStore: PostStore,
     private val dateStore: DateStore,
     private val userStore: UserStore,
-    private val categoryStore: CategoryStore
+    private val categoryStore: CategoryStore,
+    private val fileStore: FileStore
 ) {
     /* 게시글 전체 조회 */
     fun getPosts(userUUID: String?, info: PostReadInfo): List<PostResponse> {
@@ -42,28 +42,39 @@ class PostService(
 
     /* 게시글 생성 */
     @Transactional
-    fun createPost(userUUID: String, info: PostCreateInfo): PostDetailResponse {
+    fun createPost(userUUID: String, info: PostCreateInfo, files: List<MultipartFile>): PostDetailResponse {
         val writer: User = userStore.getByUUID(userUUID)
         val category: Category = categoryStore.getCategory(info.categoryId)
 
         val post: Post = PostCreateInfo.toEntity(info, category, writer)
-        val dates: List<Date> = dateStore.findOrCreateDate(info.dates)
+        var savedPost: Post = postStore.savePost(post)
 
+        val dates: List<Date> = dateStore.findOrCreateDate(info.dates)
         post.updateDates((dates.map { date -> PostDate(post, date) }).toMutableList())
-        val savedPost: Post = postStore.savePost(post)
+
+        storeImages(post, files)
+
+        savedPost = postStore.savePost(post)
 
         return PostDetailResponse.of(savedPost)
     }
 
-    fun updateDates(post: Post, dates: List<DateInfo>): List<PostDate> {
+    private fun updateDates(post: Post, dates: List<DateInfo>) {
         val dateEntities = dateStore.findOrCreateDate(dates)
+        val postDates = dateEntities.map { PostDate(post, it) }
 
-        return dateEntities.map { PostDate(post, it) }
+        post.dates.retainAll(postDates)
+        post.dates.addAll(postDates)
+    }
+
+    private fun updateImages(post: Post, files: List<MultipartFile>) {
+        fileStore.deleteFiles(post.images.map { it.file })
+        storeImages(post, files)
     }
 
     /* 게시글 수정 */
     @Transactional
-    fun updatePost(userUUID: String, info: PostUpdateInfo): PostDetailResponse {
+    fun updatePost(userUUID: String, info: PostUpdateInfo, files: List<MultipartFile>): PostDetailResponse {
         val user: User = userStore.getByUUID(userUUID)
 
         val id: Long = info.id
@@ -80,11 +91,10 @@ class PostService(
         val minPrice: Int = info.minPrice
         val maxPrice: Int = info.maxPrice
 
-        val postDates = updateDates(post, dates)
+        updateDates(post, dates)
+        updateImages(post, files)
 
         post.updatePost(category, title, description, delivery, place, minPrice, maxPrice)
-        post.dates.retainAll(postDates)
-        post.dates.addAll(postDates)
 
         return PostDetailResponse.of(post)
     }
@@ -98,5 +108,15 @@ class PostService(
         post.validateWriter(user)
 
         postStore.deletePost(post)
+    }
+
+    private fun storeImages(post: Post, files: List<MultipartFile>) {
+        val imagePath: String = "post/${post.id}"
+        val images: List<File> = fileStore.uploadFiles(imagePath, files)
+
+        val postImages: List<PostImage> = images.map { PostImage(post, it) }
+
+        post.images.retainAll(postImages)
+        post.images.addAll(postImages)
     }
 }
