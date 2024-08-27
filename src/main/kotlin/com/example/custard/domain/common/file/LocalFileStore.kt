@@ -16,7 +16,7 @@ class LocalFileStore (
     override fun uploadFiles(path: String, files: List<MultipartFile>): List<File> {
         createDirectory(path)
 
-        return files.map { file ->
+        return files.filter { !it.isEmpty }.map { file ->
             val fileUUID = UUID.randomUUID()
             val fileExtension = file.originalFilename!!.split(".").last()
             val fileOriginalName = file.originalFilename!!.split(".").first()
