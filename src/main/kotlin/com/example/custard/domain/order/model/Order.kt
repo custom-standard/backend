@@ -16,6 +16,7 @@ class Order (
     responder: User,
     roleRequester: OrderPosition,
     roleResponder: OrderPosition,
+    requestMessage: String,
     price: Int,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +34,13 @@ class Order (
     val roleRequester: OrderPosition = roleRequester
     val roleResponder: OrderPosition = roleRequester
 
+    val requestMessage: String = requestMessage
+
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val images = mutableListOf<OrderImage>()
+
     var price: Int = price
+        protected set
 
     @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
     val dates: MutableList<OrderDate> = mutableListOf()
@@ -44,6 +51,12 @@ class Order (
         this.dates.retainAll(dates)
         this.dates.addAll(dates)
     }
+
+    fun updateImages(images: MutableList<OrderImage>) {
+        this.images.retainAll(images)
+        this.images.addAll(images)
+    }
+
     fun updateOrder(price: Int, dates: MutableList<OrderDate>) {
         this.price = price
         updateDates(dates)
