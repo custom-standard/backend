@@ -7,6 +7,7 @@ import com.example.custard.domain.user.model.User
 
 class OrderCreateInfo (
     val postId: Long,
+    val requestMessage: String,
     val price: Int,
     val dates: List<OrderDateInfo>,
 ) {
@@ -14,7 +15,7 @@ class OrderCreateInfo (
         fun toEntity(info: OrderCreateInfo, post: Post, requester: User, responder: User): Order {
             val roleRequester = if (post.isSale()) OrderPosition.CLIENT else OrderPosition.CREATOR
             val roleResponder = if (post.isSale()) OrderPosition.CREATOR else OrderPosition.CLIENT
-            return Order(post, requester, responder, roleRequester, roleResponder, info.price)
+            return Order(post, requester, responder, roleRequester, roleResponder, info.requestMessage , info.price)
         }
     }
 }
