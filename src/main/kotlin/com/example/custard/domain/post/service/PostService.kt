@@ -46,30 +46,35 @@ class PostService(
         val writer: User = userStore.getByUUID(userUUID)
         val category: Category = categoryStore.getCategory(info.categoryId)
 
-        val post: Post = PostCreateInfo.toEntity(info, category, writer)
-        var savedPost: Post = postStore.savePost(post)
+        val post: Post = postStore.savePost(PostCreateInfo.toEntity(info, category, writer))
 
         val dates: List<Date> = dateStore.findOrCreateDate(info.dates)
         post.updateDates((dates.map { date -> PostDate(post, date) }).toMutableList())
 
         storeImages(post, files)
 
-        savedPost = postStore.savePost(post)
-
-        return PostDetailResponse.of(savedPost)
+        return PostDetailResponse.of(post)
     }
 
     private fun updateDates(post: Post, dates: List<DateInfo>) {
         val dateEntities = dateStore.findOrCreateDate(dates)
         val postDates = dateEntities.map { PostDate(post, it) }
 
-        post.dates.retainAll(postDates)
-        post.dates.addAll(postDates)
+        post.updateDates(postDates.toMutableList())
     }
 
     private fun updateImages(post: Post, files: List<MultipartFile>) {
         fileStore.deleteFiles(post.images.map { it.file })
         storeImages(post, files)
+    }
+
+    private fun storeImages(post: Post, files: List<MultipartFile>) {
+        val imagePath: String = "post/${post.id}"
+        val images: List<File> = fileStore.uploadFiles(imagePath, files)
+
+        val postImages: List<PostImage> = images.map { PostImage(post, it) }
+
+        post.updateImages(postImages.toMutableList())
     }
 
     /* 게시글 수정 */
@@ -108,15 +113,5 @@ class PostService(
         post.validateWriter(user)
 
         postStore.deletePost(post)
-    }
-
-    private fun storeImages(post: Post, files: List<MultipartFile>) {
-        val imagePath: String = "post/${post.id}"
-        val images: List<File> = fileStore.uploadFiles(imagePath, files)
-
-        val postImages: List<PostImage> = images.map { PostImage(post, it) }
-
-        post.images.retainAll(postImages)
-        post.images.addAll(postImages)
     }
 }
