@@ -1,11 +1,14 @@
 package com.example.custard.domain.order.service
 
+import com.example.custard.domain.common.file.File
+import com.example.custard.domain.common.file.FileStore
 import com.example.custard.domain.order.dto.info.*
 import com.example.custard.domain.order.dto.response.*
 import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.model.Order
 import com.example.custard.domain.order.model.OrderDate
+import com.example.custard.domain.order.model.OrderImage
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.service.PostStore
 import com.example.custard.domain.proposal.model.Proposal
@@ -15,6 +18,7 @@ import com.example.custard.domain.user.service.UserStore
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class OrderService (
@@ -22,6 +26,7 @@ class OrderService (
     private val postStore: PostStore,
     private val proposalStore: ProposalStore,
     private val userStore: UserStore,
+    private val fileStore: FileStore,
 ) {
     fun getOrder(userUUID: String, orderId: Long): OrderResponse {
         val user: User = userStore.getByUUID(userUUID)
@@ -49,19 +54,29 @@ class OrderService (
     }
 
     @Transactional
-    fun createOrder(userUUID: String, info: OrderCreateInfo): OrderResponse {
+    fun createOrder(userUUID: String, info: OrderCreateInfo, files: List<MultipartFile>): OrderResponse {
         val post: Post = postStore.getById(info.postId)
 
         val requester: User = userStore.getByUUID(userUUID)
         val responder: User = post.writer
 
-        val order: Order = OrderCreateInfo.toEntity(info, post, requester, responder)
+        val order: Order = orderStore.saveOrder(OrderCreateInfo.toEntity(info, post, requester, responder))
+
         val dates: List<OrderDate> = info.dates.map { OrderDateInfo.toEntity(it, order) }
         order.updateDates(dates.toMutableList())
 
-        orderStore.saveOrder(order)
+        storeImages(order, files)
 
         return OrderResponse.of(order, order.isRequester(requester))
+    }
+
+    private fun storeImages(order: Order, files: List<MultipartFile>) {
+        val imagePath: String = "order/${order.id}"
+        val images: List<File> = fileStore.uploadFiles(imagePath, files)
+
+        val orderImages: List<OrderImage> = images.map { OrderImage(order, it) }
+
+        order.updateImages(orderImages.toMutableList())
     }
 
     @Transactional

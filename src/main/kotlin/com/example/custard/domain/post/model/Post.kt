@@ -45,6 +45,10 @@ class Post (
         protected set
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var images = mutableListOf<PostImage>()
+        protected set
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     var dates = mutableListOf<PostDate>()
         protected set
 
@@ -86,7 +90,13 @@ class Post (
     }
 
     fun updateDates(dates: MutableList<PostDate>) {
-        this.dates = dates
+        this.dates.retainAll(dates)
+        this.dates.addAll(dates)
+    }
+
+    fun updateImages(images: MutableList<PostImage>) {
+        this.images.retainAll(images)
+        this.images.addAll(images)
     }
 
     fun updatePublic(public: Boolean) {

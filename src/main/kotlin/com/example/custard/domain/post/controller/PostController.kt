@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/post")
@@ -36,20 +38,22 @@ class PostController (
     /* 게시글 생성 */
     @PostMapping("/create")
     fun createPost(
-        @RequestBody request: PostCreateRequest,
+        @RequestPart(name = "request") request: PostCreateRequest,
+        @RequestPart(name = "files") files: List<MultipartFile>,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = postService.createPost(user.username, request.createInfo())
+        val response = postService.createPost(user.username, request.createInfo(), files)
         return ApiResponse.success(response)
     }
 
     /* 게시글 수정 */
     @PatchMapping("/update")
     fun updatePost(
-        @RequestBody request: PostUpdateRequest,
+        @RequestPart(name = "request") request: PostUpdateRequest,
+        @RequestPart(name = "files") files: List<MultipartFile>,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = postService.updatePost(user.username, request.createInfo())
+        val response = postService.updatePost(user.username, request.createInfo(), files)
         return ApiResponse.success(response)
     }
 
