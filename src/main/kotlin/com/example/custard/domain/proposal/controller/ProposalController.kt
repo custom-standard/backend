@@ -6,6 +6,7 @@ import com.example.custard.domain.proposal.service.ProposalService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/proposal")
@@ -33,10 +34,11 @@ class ProposalController (
 
     @PostMapping("/create")
     fun createProposal(
-        @RequestBody request: ProposalCreateRequest,
+        @RequestPart(name = "request") request: ProposalCreateRequest,
+        @RequestPart(name = "files") files: List<MultipartFile>,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = proposalService.createProposal(user.username, request.createInfo())
+        val response = proposalService.createProposal(user.username, request.createInfo(), files)
         return ApiResponse.success(response)
     }
 
