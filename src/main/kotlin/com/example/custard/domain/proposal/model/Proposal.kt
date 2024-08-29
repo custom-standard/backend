@@ -38,7 +38,17 @@ class Proposal(
 
     val message: String? = message
 
+    @OneToMany(mappedBy = "proposal", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var images = mutableListOf<ProposalImage>()
+        protected set
+
     var status: ProposalStatus = ProposalStatus.PENDING
+        protected set
+
+    fun updateImages(images: List<ProposalImage>) {
+        this.images.retainAll(images)
+        this.images.addAll(images)
+    }
 
     fun updateProposalStatus(user: User, accept: Boolean) {
         validateIsPending()
