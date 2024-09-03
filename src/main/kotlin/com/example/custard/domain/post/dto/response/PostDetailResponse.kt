@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.dto.response
 
+import com.example.custard.domain.common.file.FileResponse
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.model.PostType
 import com.example.custard.domain.user.dto.response.UserResponse
@@ -10,6 +11,7 @@ class PostDetailResponse (
     val type: PostType,
     val title: String,
     val description: String,
+    val images: List<FileResponse>,
     val dates: List<DateResponse>,
     val delivery: Boolean,
     val place: String?,
@@ -21,12 +23,14 @@ class PostDetailResponse (
 ) {
     companion object {
         fun of(post: Post): PostDetailResponse {
+            val images = post.images.map { FileResponse.of(it.file) }
             return PostDetailResponse(
                 postId = post.id,
                 category = CategoryResponse.of(post.category),
                 type = post.type,
                 title = post.title,
                 description = post.description,
+                images = images,
                 dates = post.dates.map { DateResponse.of(it.date) },
                 delivery = post.delivery,
                 place = post.place,
