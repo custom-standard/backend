@@ -36,7 +36,7 @@ class PostController (
     }
 
     /* 게시글 생성 */
-    @PostMapping("/create")
+    @PostMapping
     fun createPost(
         @RequestPart(name = "request") request: PostCreateRequest,
         @RequestPart(name = "files") files: List<MultipartFile>,
@@ -47,7 +47,7 @@ class PostController (
     }
 
     /* 게시글 수정 */
-    @PatchMapping("/update")
+    @PatchMapping
     fun updatePost(
         @RequestPart(name = "request") request: PostUpdateRequest,
         @RequestPart(name = "files") files: List<MultipartFile>,
@@ -58,7 +58,7 @@ class PostController (
     }
 
     /* 게시글 삭제 */
-    @DeleteMapping("/delete")
+    @DeleteMapping
     fun deletePost(
         @RequestParam postId: Long,
         @AuthenticationPrincipal user: UserDetails

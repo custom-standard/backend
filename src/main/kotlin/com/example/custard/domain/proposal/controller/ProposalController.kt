@@ -32,7 +32,7 @@ class ProposalController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/create")
+    @PostMapping
     fun createProposal(
         @RequestPart(name = "request") request: ProposalCreateRequest,
         @RequestPart(name = "files") files: List<MultipartFile>,
@@ -42,7 +42,7 @@ class ProposalController (
         return ApiResponse.success(response)
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     fun deleteProposal(
         @RequestParam proposalId: Long,
         @AuthenticationPrincipal user: UserDetails
