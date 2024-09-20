@@ -22,13 +22,13 @@ class ProposalController (
         return ApiResponse.success(response)
     }
 
-    @PatchMapping("/process")
-    fun processProposal(
+    @PostMapping("/confirm")
+    fun confirmProposal(
         @RequestParam proposalId: Long,
         @RequestParam isAccept: Boolean,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = proposalService.processProposal(user.username, proposalId, isAccept)
+        val response = proposalService.confirmProposal(user.username, proposalId, isAccept)
         return ApiResponse.success(response)
     }
 
