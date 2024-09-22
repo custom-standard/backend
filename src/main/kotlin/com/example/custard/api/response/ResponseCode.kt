@@ -9,6 +9,7 @@ enum class ResponseCode(
     FORBIDDEN(403, "forbidden"),
     NOT_FOUND(404, "not found"),
     METHOD_NOT_SUPPORTED(405, "method not supported"),
+    DUPLICATE(409, "duplicate"),
     SERVER_ERROR(500, "server error"),
     NOT_IMPLEMENTED(501, "not implemented");
 }
