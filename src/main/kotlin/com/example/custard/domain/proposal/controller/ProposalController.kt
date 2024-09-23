@@ -22,17 +22,17 @@ class ProposalController (
         return ApiResponse.success(response)
     }
 
-    @PatchMapping("/process")
-    fun processProposal(
+    @PostMapping("/confirm")
+    fun confirmProposal(
         @RequestParam proposalId: Long,
         @RequestParam isAccept: Boolean,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = proposalService.processProposal(user.username, proposalId, isAccept)
+        val response = proposalService.confirmProposal(user.username, proposalId, isAccept)
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/create")
+    @PostMapping
     fun createProposal(
         @RequestPart(name = "request") request: ProposalCreateRequest,
         @RequestPart(name = "files") files: List<MultipartFile>,
@@ -42,7 +42,7 @@ class ProposalController (
         return ApiResponse.success(response)
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     fun deleteProposal(
         @RequestParam proposalId: Long,
         @AuthenticationPrincipal user: UserDetails

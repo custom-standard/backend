@@ -35,7 +35,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/create")
+    @PostMapping
     fun createOrder(
         @RequestPart(name = "request") request: OrderCreateRequest,
         @RequestPart(name = "files") files: List<MultipartFile>,
@@ -55,7 +55,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/update/status")
+    @PatchMapping("/update/status")
     fun updateOrderStatus(
         @RequestBody request: OrderUpdateStatusRequest,
         @AuthenticationPrincipal user: UserDetails
@@ -64,7 +64,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/update/data")
+    @PatchMapping("/update/data")
     fun updateOrderData(
         @RequestBody request: OrderUpdateDataRequest,
         @AuthenticationPrincipal user: UserDetails
@@ -73,7 +73,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     fun deleteOrder(
         @RequestParam orderId: Long,
         @AuthenticationPrincipal user: UserDetails

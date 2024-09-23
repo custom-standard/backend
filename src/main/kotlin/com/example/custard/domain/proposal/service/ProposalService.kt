@@ -29,7 +29,7 @@ class ProposalService (
     }
 
     @Transactional
-    fun processProposal(userUUID: String, proposalId: Long, isAccept: Boolean): ProposalResponse {
+    fun confirmProposal(userUUID: String, proposalId: Long, isAccept: Boolean): ProposalResponse {
         val proposal: Proposal = proposalStore.getProposalById(proposalId)
         val user: User = userStore.getByUUID(userUUID)
 
