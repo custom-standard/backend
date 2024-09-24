@@ -5,7 +5,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
-class Date (
+@Table(name = "schedule")
+class Schedule (
     date: LocalDate,
     time: LocalTime?,
 ) {
