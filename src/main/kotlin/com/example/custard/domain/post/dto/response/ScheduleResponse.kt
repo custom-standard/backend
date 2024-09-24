@@ -1,16 +1,16 @@
 package com.example.custard.domain.post.dto.response
 
-import com.example.custard.domain.post.model.Date
+import com.example.custard.domain.post.model.Schedule
 import java.time.LocalDate
 import java.time.LocalTime
 
-class DateResponse (
+class ScheduleResponse (
     val date: LocalDate,
     val time: LocalTime?,
 ) {
     companion object {
-        fun of(date: Date): DateResponse {
-            return DateResponse(date.date, date.time)
+        fun of(schedule: Schedule): ScheduleResponse {
+            return ScheduleResponse(schedule.date, schedule.time)
         }
     }
 }
