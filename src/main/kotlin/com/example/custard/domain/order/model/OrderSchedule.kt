@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
-class OrderDate (
+class OrderSchedule (
     order: Order,
     date: LocalDate,
     time: LocalTime?,
