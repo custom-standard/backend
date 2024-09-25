@@ -64,7 +64,7 @@ class PostCustomRepositoryImpl (
     private fun eqDate(date: LocalDate?): BooleanExpression? {
         return date?.let {
             val post = QPost.post
-            return post.dates.any().date.date.eq(date)
+            return post.schedules.any().schedule.date.eq(date)
         }
     }
 

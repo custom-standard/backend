@@ -5,7 +5,7 @@ import com.example.custard.domain.post.model.Schedule
 
 interface ScheduleStore {
     fun saveScheduleIfNotExists(schedule: Schedule): Schedule
-    fun findOrCreateSchedule(dates: List<ScheduleInfo>): List<Schedule>
+    fun findOrCreateSchedule(schedules: List<ScheduleInfo>): List<Schedule>
     fun deleteSchedule(schedule: Schedule)
     fun deleteSchedules(schedules: List<Schedule>)
 }

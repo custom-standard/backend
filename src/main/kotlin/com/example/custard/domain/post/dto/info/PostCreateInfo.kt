@@ -10,7 +10,7 @@ class PostCreateInfo (
     val categoryId: Long,
     val title: String,
     val description: String,
-    val dates: List<DateInfo>,
+    val schedules: List<ScheduleInfo>,
     val delivery: Boolean,
     val place: String?,
     val minPrice: Int,
@@ -21,22 +21,22 @@ class PostCreateInfo (
     constructor(categoryId: Long,
                 title: String,
                 description: String,
-                dates: List<DateInfo>,
+                schedules: List<ScheduleInfo>,
                 delivery: Boolean,
                 place: String?,
                 minPrice: Int,
-                maxPrice: Int) : this(PostType.PURCHASE, categoryId, title, description, dates, delivery, place, minPrice, maxPrice, null) {
+                maxPrice: Int) : this(PostType.PURCHASE, categoryId, title, description, schedules, delivery, place, minPrice, maxPrice, null) {
                 }
 
     constructor(categoryId: Long,
                 title: String,
                 description: String,
-                dates: List<DateInfo>,
+                schedules: List<ScheduleInfo>,
                 delivery: Boolean,
                 place: String?,
                 minPrice: Int,
                 maxPrice: Int,
-                product: Long?): this(PostType.SALE, categoryId, title, description, dates, delivery, place, minPrice, maxPrice, product) {
+                product: Long?): this(PostType.SALE, categoryId, title, description, schedules, delivery, place, minPrice, maxPrice, product) {
                 }
 
     companion object {
