@@ -9,7 +9,7 @@ class OrderCreateInfo (
     val postId: Long,
     val requestMessage: String,
     val price: Int,
-    val dates: List<OrderDateInfo>,
+    val schedules: List<OrderScheduleInfo>,
 ) {
     companion object {
         fun toEntity(info: OrderCreateInfo, post: Post, requester: User, responder: User): Order {

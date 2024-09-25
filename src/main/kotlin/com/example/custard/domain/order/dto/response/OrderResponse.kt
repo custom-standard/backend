@@ -14,13 +14,13 @@ class OrderResponse (
     val requestMessage: String,
     val images: List<FileResponse>,
     val price: Int,
-    val dates: List<OrderDateResponse>,
+    val schedules: List<OrderScheduleResponse>,
     val status: OrderStatus,
     val isRequest: Boolean,
 ) {
     companion object {
         fun of(order: Order, isRequest: Boolean): OrderResponse {
-            val dates: List<OrderDateResponse> = order.dates.map { OrderDateResponse.of(it) }
+            val schedules: List<OrderScheduleResponse> = order.schedules.map { OrderScheduleResponse.of(it) }
             val images: List<FileResponse> = order.images.map { FileResponse.of(it.file) }
             return OrderResponse(
                 orderId = order.id,
@@ -30,7 +30,7 @@ class OrderResponse (
                 requestMessage = order.requestMessage,
                 images = images,
                 price = order.price,
-                dates = dates,
+                schedules = schedules,
                 status = order.status,
                 isRequest = isRequest
             )

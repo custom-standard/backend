@@ -4,7 +4,7 @@ import com.example.custard.domain.order.dto.info.OrderScheduleInfo
 import java.time.LocalDate
 import java.time.LocalTime
 
-class OrderDateRequest (
+class OrderScheduleRequest (
     val date: LocalDate,
     val time: LocalTime?,
 ) {

@@ -1,16 +1,16 @@
 package com.example.custard.domain.order.dto.request
 
 import com.example.custard.domain.order.dto.info.OrderCreateInfo
-import com.example.custard.domain.order.dto.info.OrderDateInfo
+import com.example.custard.domain.order.dto.info.OrderScheduleInfo
 
 class OrderCreateRequest (
     val postId: Long,
     val requestMessage: String,
     val price: Int,
-    val dates: List<OrderDateRequest>,
+    val schedules: List<OrderScheduleRequest>,
 ) {
     fun createInfo(): OrderCreateInfo {
-        val dates: List<OrderDateInfo> = dates.map { it.createInfo() }
-        return OrderCreateInfo(postId, requestMessage, price, dates)
+        val schedules: List<OrderScheduleInfo> = schedules.map { it.createInfo() }
+        return OrderCreateInfo(postId, requestMessage, price, schedules)
     }
 }
