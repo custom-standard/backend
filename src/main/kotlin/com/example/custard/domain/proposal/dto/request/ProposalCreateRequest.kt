@@ -5,7 +5,7 @@ import com.example.custard.domain.proposal.dto.info.ProposalCreateInfo
 class ProposalCreateRequest (
     val orderId: Long,
     val price: Int,
-    val date: ProposalDateRequest,
+    val date: ProposalScheduleRequest,
     val message: String,
 ) {
     fun createInfo(): ProposalCreateInfo {
