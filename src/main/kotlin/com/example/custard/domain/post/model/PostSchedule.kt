@@ -3,9 +3,9 @@ package com.example.custard.domain.post.model
 import jakarta.persistence.*
 
 @Entity
-class PostDate (
+class PostSchedule (
     post: Post,
-    date: Date,
+    schedule: Schedule,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +16,6 @@ class PostDate (
     val post: Post = post
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "date_id")
-    val date: Date = date
+    @JoinColumn(name = "schedule_id")
+    val schedule: Schedule = schedule
 }

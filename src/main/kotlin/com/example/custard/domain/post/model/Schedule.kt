@@ -1,21 +1,18 @@
-package com.example.custard.domain.order.model
+package com.example.custard.domain.post.model
 
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
-class OrderDate (
-    order: Order,
+@Table(name = "schedule")
+class Schedule (
     date: LocalDate,
     time: LocalTime?,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
-
-   @ManyToOne(fetch = FetchType.LAZY)
-    val order: Order = order
 
     val date: LocalDate = date
 

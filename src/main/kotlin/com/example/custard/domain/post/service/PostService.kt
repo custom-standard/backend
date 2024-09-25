@@ -2,7 +2,7 @@ package com.example.custard.domain.post.service
 
 import com.example.custard.domain.common.file.File
 import com.example.custard.domain.common.file.FileStore
-import com.example.custard.domain.post.service.date.DateStore
+import com.example.custard.domain.post.service.date.ScheduleStore
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
@@ -18,7 +18,7 @@ import java.time.LocalDate
 @Service
 class PostService(
     private val postStore: PostStore,
-    private val dateStore: DateStore,
+    private val scheduleStore: ScheduleStore,
     private val userStore: UserStore,
     private val categoryStore: CategoryStore,
     private val fileStore: FileStore
@@ -48,19 +48,19 @@ class PostService(
 
         val post: Post = postStore.savePost(PostCreateInfo.toEntity(info, category, writer))
 
-        val dates: List<Date> = dateStore.findOrCreateDate(info.dates)
-        post.updateDates((dates.map { date -> PostDate(post, date) }).toMutableList())
+        val schedules: List<Schedule> = scheduleStore.findOrCreateSchedule(info.schedules)
+        post.updateSchedule((schedules.map { date -> PostSchedule(post, date) }).toMutableList())
 
         storeImages(post, files)
 
         return PostDetailResponse.of(post)
     }
 
-    private fun updateDates(post: Post, dates: List<DateInfo>) {
-        val dateEntities = dateStore.findOrCreateDate(dates)
-        val postDates = dateEntities.map { PostDate(post, it) }
+    private fun updateSchedules(post: Post, schedules: List<ScheduleInfo>) {
+        val scheduleEntities = scheduleStore.findOrCreateSchedule(schedules)
+        val postSchedules = scheduleEntities.map { PostSchedule(post, it) }
 
-        post.updateDates(postDates.toMutableList())
+        post.updateSchedule(postSchedules.toMutableList())
     }
 
     private fun updateImages(post: Post, files: List<MultipartFile>) {
@@ -90,13 +90,13 @@ class PostService(
         val category: Category = categoryStore.getCategory(info.categoryId)
         val title: String = info.title
         val description: String = info.description
-        val dates: List<DateInfo> = info.dates
+        val schedules: List<ScheduleInfo> = info.schedules
         val delivery: Boolean = info.delivery
         val place: String? = info.place
         val minPrice: Int = info.minPrice
         val maxPrice: Int = info.maxPrice
 
-        updateDates(post, dates)
+        updateSchedules(post, schedules)
         updateImages(post, files)
 
         post.updatePost(category, title, description, delivery, place, minPrice, maxPrice)

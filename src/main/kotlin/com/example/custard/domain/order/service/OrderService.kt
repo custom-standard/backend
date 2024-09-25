@@ -7,7 +7,7 @@ import com.example.custard.domain.order.dto.response.*
 import com.example.custard.domain.order.enums.OrderPosition
 import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.model.Order
-import com.example.custard.domain.order.model.OrderDate
+import com.example.custard.domain.order.model.OrderSchedule
 import com.example.custard.domain.order.model.OrderImage
 import com.example.custard.domain.post.model.Post
 import com.example.custard.domain.post.service.PostStore
@@ -62,8 +62,8 @@ class OrderService (
 
         val order: Order = orderStore.saveOrder(OrderCreateInfo.toEntity(info, post, requester, responder))
 
-        val dates: List<OrderDate> = info.dates.map { OrderDateInfo.toEntity(it, order) }
-        order.updateDates(dates.toMutableList())
+        val schedules: List<OrderSchedule> = info.schedules.map { OrderScheduleInfo.toEntity(it, order) }
+        order.updateSchedules(schedules.toMutableList())
 
         storeImages(order, files)
 
@@ -112,9 +112,9 @@ class OrderService (
 
         proposal.validateProposal(order, user)
 
-        val date: OrderDate = OrderDate(order, proposal.date.date, proposal.date.time)
+        val schedule: OrderSchedule = OrderSchedule(order, proposal.schedule.date, proposal.schedule.time)
 
-        order.updateOrder(proposal.price, mutableListOf(date))
+        order.updateOrder(proposal.price, mutableListOf(schedule))
 
         return OrderResponse.of(order, order.isRequester(user))
     }

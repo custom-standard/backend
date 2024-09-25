@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Embeddable
-class ProposalDate (
+class ProposalSchedule (
     var date: LocalDate,
     var time: LocalTime?,
 ) {

@@ -7,7 +7,7 @@ import com.example.custard.domain.user.model.User
 class ProposalCreateInfo (
     val orderId: Long,
     val price: Int,
-    val date: ProposalDateInfo,
+    val date: ProposalScheduleInfo,
     val message: String,
 ) {
     companion object {
