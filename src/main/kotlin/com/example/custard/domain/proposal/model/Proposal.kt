@@ -34,7 +34,7 @@ class Proposal(
     val price: Int = price
 
     @Embedded
-    val date: ProposalDate = ProposalDate(date, time)
+    val schedule: ProposalSchedule = ProposalSchedule(date, time)
 
     val message: String? = message
 

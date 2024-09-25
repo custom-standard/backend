@@ -49,7 +49,7 @@ class Post (
         protected set
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var dates = mutableListOf<PostDate>()
+    var schedules = mutableListOf<PostSchedule>()
         protected set
 
     var delivery: Boolean = delivery
@@ -89,9 +89,9 @@ class Post (
         this.maxPrice = maxPrice
     }
 
-    fun updateDates(dates: MutableList<PostDate>) {
-        this.dates.retainAll(dates)
-        this.dates.addAll(dates)
+    fun updateSchedule(schedules: MutableList<PostSchedule>) {
+        this.schedules.retainAll(schedules)
+        this.schedules.addAll(schedules)
     }
 
     fun updateImages(images: MutableList<PostImage>) {

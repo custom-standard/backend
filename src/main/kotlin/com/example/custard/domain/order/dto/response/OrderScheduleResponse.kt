@@ -1,6 +1,6 @@
 package com.example.custard.domain.order.dto.response
 
-import com.example.custard.domain.order.model.OrderDate
+import com.example.custard.domain.order.model.OrderSchedule
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -9,7 +9,7 @@ class OrderDateResponse (
     val time: LocalTime?,
 ) {
     companion object {
-        fun of(date: OrderDate): OrderDateResponse {
+        fun of(date: OrderSchedule): OrderDateResponse {
             return OrderDateResponse(date.date, date.time)
         }
     }

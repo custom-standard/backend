@@ -43,13 +43,13 @@ class Order (
         protected set
 
     @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val dates: MutableList<OrderDate> = mutableListOf()
+    val schedules: MutableList<OrderSchedule> = mutableListOf()
 
     var status: OrderStatus = OrderStatus.WAITING
 
-    fun updateDates(dates: MutableList<OrderDate>) {
-        this.dates.retainAll(dates)
-        this.dates.addAll(dates)
+    fun updateSchedules(schedules: MutableList<OrderSchedule>) {
+        this.schedules.retainAll(schedules)
+        this.schedules.addAll(schedules)
     }
 
     fun updateImages(images: MutableList<OrderImage>) {
@@ -57,9 +57,9 @@ class Order (
         this.images.addAll(images)
     }
 
-    fun updateOrder(price: Int, dates: MutableList<OrderDate>) {
+    fun updateOrder(price: Int, schedules: MutableList<OrderSchedule>) {
         this.price = price
-        updateDates(dates)
+        updateSchedules(schedules)
     }
 
     fun confirmOrder(responder: User, accept: Boolean) {
