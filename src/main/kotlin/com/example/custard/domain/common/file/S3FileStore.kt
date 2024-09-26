@@ -47,6 +47,7 @@ class S3FileStore (
             val filePath = "${file.filePath}/${file.fileName}"
             try {
                 amazonS3.deleteObject(bucket, filePath)
+                fileRepository.delete(file)
             } catch (e: Exception) {
                 // TODO: Exception 처리
                 throw RuntimeException("Failed to delete file from S3: $filePath", e)

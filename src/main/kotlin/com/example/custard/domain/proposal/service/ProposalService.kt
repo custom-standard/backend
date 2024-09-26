@@ -67,6 +67,9 @@ class ProposalService (
 
         proposal.validateSender(user)
 
+        val files: List<File> = proposal.images.map { it.file }
+        fileStore.deleteFiles(files)
+
         proposalStore.deleteProposal(proposal)
     }
 }

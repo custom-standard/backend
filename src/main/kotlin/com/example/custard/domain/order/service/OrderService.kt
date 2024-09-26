@@ -126,6 +126,9 @@ class OrderService (
 
         order.validateRequester(user)
 
+        val files: List<File> = order.images.map { it.file }
+        fileStore.deleteFiles(files)
+
         orderStore.deleteOrder(order)
     }
 }

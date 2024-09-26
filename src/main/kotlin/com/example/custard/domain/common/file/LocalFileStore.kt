@@ -40,7 +40,13 @@ class LocalFileStore (
     override fun deleteFiles(file: List<File>) {
         file.forEach { file ->
             val fileUrl = "${localUrl}/${file.filePath}/${file.fileName}"
-            java.io.File(fileUrl).delete()
+            try {
+                java.io.File(fileUrl).delete()
+                fileRepository.delete(file)
+            } catch (e: Exception) {
+                // TODO: Exception 처리
+                throw RuntimeException("Failed to delete file from local storage: $fileUrl", e)
+            }
         }
     }
 
