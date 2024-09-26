@@ -15,7 +15,7 @@ class PostImage (
     @JoinColumn(name = "post_id")
     val post: Post = post
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     val file: File = file
 }

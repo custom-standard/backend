@@ -112,6 +112,9 @@ class PostService(
 
         post.validateWriter(user)
 
+        val files: List<File> = post.images.map { it.file }
+        fileStore.deleteFiles(files)
+
         postStore.deletePost(post)
     }
 }

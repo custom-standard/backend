@@ -15,7 +15,7 @@ class OrderImage (
     @JoinColumn(name = "order_id")
     val order: Order = order
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     val file: File = file
 }
