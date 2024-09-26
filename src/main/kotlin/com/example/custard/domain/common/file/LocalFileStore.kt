@@ -1,11 +1,13 @@
 package com.example.custard.domain.common.file
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @Component
+@Profile("dev")
 class LocalFileStore (
     private val fileRepository: FileRepository
 ) : FileStore {
@@ -25,8 +27,13 @@ class LocalFileStore (
 
             val fileEntity = File(fileOriginalName, fileName, fileUUID, path, fileExtension)
 
-            file.transferTo(java.io.File(fileUrl))
-            fileRepository.save(fileEntity)
+            try {
+                file.transferTo(java.io.File(fileUrl))
+                fileRepository.save(fileEntity)
+            } catch (e: Exception) {
+                // TODO: Exception 처리
+                throw RuntimeException("Failed to save file to local storage: $fileOriginalName", e)
+            }
         }
     }
 
