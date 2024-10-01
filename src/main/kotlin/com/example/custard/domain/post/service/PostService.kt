@@ -1,26 +1,27 @@
 package com.example.custard.domain.post.service
 
-import com.example.custard.domain.common.date.dto.DateInfo
+import com.example.custard.domain.common.file.File
+import com.example.custard.domain.common.file.FileStore
+import com.example.custard.domain.post.service.date.ScheduleStore
 import com.example.custard.domain.post.dto.info.*
 import com.example.custard.domain.post.dto.response.PostDetailResponse
 import com.example.custard.domain.post.dto.response.PostResponse
-import com.example.custard.domain.post.model.Category
-import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.post.model.PostType
-import com.example.custard.domain.post.model.PostDate
+import com.example.custard.domain.post.model.*
 import com.example.custard.domain.post.service.category.CategoryStore
-import com.example.custard.domain.post.service.date.PostDateStore
 import com.example.custard.domain.user.model.User
 import com.example.custard.domain.user.service.UserStore
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Service
 class PostService(
     private val postStore: PostStore,
-    private val postDateStore: PostDateStore,
+    private val scheduleStore: ScheduleStore,
     private val userStore: UserStore,
-    private val categoryStore: CategoryStore
+    private val categoryStore: CategoryStore,
+    private val fileStore: FileStore
 ) {
     /* 게시글 전체 조회 */
     fun getPosts(userUUID: String?, info: PostReadInfo): List<PostResponse> {
@@ -40,66 +41,80 @@ class PostService(
     }
 
     /* 게시글 생성 */
-    fun createPost(userUUID: String, info: PostCreateInfo): PostDetailResponse {
+    @Transactional
+    fun createPost(userUUID: String, info: PostCreateInfo, files: List<MultipartFile>): PostDetailResponse {
         val writer: User = userStore.getByUUID(userUUID)
         val category: Category = categoryStore.getCategory(info.categoryId)
 
-        val post: Post = PostCreateInfo.toEntity(info, category, writer)
-        val savedPost: Post = postStore.savePost(post)
+        val post: Post = postStore.savePost(PostCreateInfo.toEntity(info, category, writer))
 
-        val dates = info.dates
-        val dateEntities = dates.map { date -> DateInfo.toEntity(date) }
+        val schedules: List<Schedule> = scheduleStore.findOrCreateSchedule(info.schedules)
+        post.updateSchedule((schedules.map { date -> PostSchedule(post, date) }).toMutableList())
 
-        postDateStore.savePostDate(post, dateEntities)
+        storeImages(post, files)
 
-        return PostDetailResponse.of(savedPost)
+        return PostDetailResponse.of(post)
     }
 
-    fun updateDates(post: Post, dates: List<DateInfo>): List<PostDate> {
-        val dates = dates.map { date -> DateInfo.toEntity(date) }
-        return postDateStore.updatePostDate(post, dates)
+    private fun updateSchedules(post: Post, schedules: List<ScheduleInfo>) {
+        val scheduleEntities = scheduleStore.findOrCreateSchedule(schedules)
+        val postSchedules = scheduleEntities.map { PostSchedule(post, it) }
+
+        post.updateSchedule(postSchedules.toMutableList())
+    }
+
+    private fun updateImages(post: Post, files: List<MultipartFile>) {
+        fileStore.deleteFiles(post.images.map { it.file })
+        storeImages(post, files)
+    }
+
+    private fun storeImages(post: Post, files: List<MultipartFile>) {
+        val imagePath: String = "post/${post.id}"
+        val images: List<File> = fileStore.uploadFiles(imagePath, files)
+
+        val postImages: List<PostImage> = images.map { PostImage(post, it) }
+
+        post.updateImages(postImages.toMutableList())
     }
 
     /* 게시글 수정 */
-    fun updatePost(userUUID: String, info: PostUpdateInfo): PostDetailResponse {
-        val writer: User = userStore.getByUUID(userUUID)
+    @Transactional
+    fun updatePost(userUUID: String, info: PostUpdateInfo, files: List<MultipartFile>): PostDetailResponse {
+        val user: User = userStore.getByUUID(userUUID)
 
         val id: Long = info.id
         val post: Post = postStore.getById(id)
 
-        if (post.writer.id != writer.id) {
-            // TODO: 예외 처리
-            throw RuntimeException("해당 게시글의 수정 권한이 없습니다.")
-        }
+        post.validateWriter(user)
 
         val category: Category = categoryStore.getCategory(info.categoryId)
         val title: String = info.title
         val description: String = info.description
-        val dates: List<DateInfo> = info.dates
+        val schedules: List<ScheduleInfo> = info.schedules
         val delivery: Boolean = info.delivery
         val place: String? = info.place
         val minPrice: Int = info.minPrice
         val maxPrice: Int = info.maxPrice
-        // *** only for sale post ***
-        val product: String? = info.product
 
-        updateDates(post, dates)
-        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice, product)
+        updateSchedules(post, schedules)
+        updateImages(post, files)
+
+        post.updatePost(category, title, description, delivery, place, minPrice, maxPrice)
 
         return PostDetailResponse.of(post)
     }
 
     /* 게시글 삭제 */
+    @Transactional
     fun deletePost(userUUID: String, id: Long) {
-        val writer: User = userStore.getByUUID(userUUID)
+        val user: User = userStore.getByUUID(userUUID)
         val post: Post = postStore.getById(id)
 
-        if (post.writer.id != writer.id) {
-            // TODO: 예외 처리
-            throw RuntimeException("해당 게시글의 삭제 권한이 없습니다.")
-        }
+        post.validateWriter(user)
 
-        postDateStore.deleteAllByPost(post)
+        val files: List<File> = post.images.map { it.file }
+        fileStore.deleteFiles(files)
+
         postStore.deletePost(post)
     }
 }

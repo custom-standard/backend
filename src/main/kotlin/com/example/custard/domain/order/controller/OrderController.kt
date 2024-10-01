@@ -9,6 +9,7 @@ import com.example.custard.domain.order.service.OrderService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/order")
@@ -34,12 +35,13 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/create")
+    @PostMapping
     fun createOrder(
-        @RequestBody request: OrderCreateRequest,
+        @RequestPart(name = "request") request: OrderCreateRequest,
+        @RequestPart(name = "files") files: List<MultipartFile>,
         @AuthenticationPrincipal user: UserDetails
     ): ApiResponse<*> {
-        val response = orderService.createOrder(user.username, request.createInfo())
+        val response = orderService.createOrder(user.username, request.createInfo(), files)
         return ApiResponse.success(response)
     }
 
@@ -53,7 +55,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/update/status")
+    @PatchMapping("/update/status")
     fun updateOrderStatus(
         @RequestBody request: OrderUpdateStatusRequest,
         @AuthenticationPrincipal user: UserDetails
@@ -62,7 +64,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @PostMapping("/update/data")
+    @PatchMapping("/update/data")
     fun updateOrderData(
         @RequestBody request: OrderUpdateDataRequest,
         @AuthenticationPrincipal user: UserDetails
@@ -71,7 +73,7 @@ class OrderController (
         return ApiResponse.success(response)
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     fun deleteOrder(
         @RequestParam orderId: Long,
         @AuthenticationPrincipal user: UserDetails

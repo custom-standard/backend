@@ -17,8 +17,15 @@ class Category (
     val id: Long = 0
 
     @Column(name = "category_name", nullable = false, unique = true)
-    val name: String = name
+    var name: String = name
+        protected set
 
     @Column(name = "category_description", nullable = false)
-    val description: String = description
+    var description: String = description
+        protected set
+
+    fun updateCategory(name: String, description: String) {
+        this.name = name
+        this.description = description
+    }
 }

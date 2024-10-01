@@ -1,5 +1,6 @@
 package com.example.custard.domain.post.model
 
+import com.example.custard.domain.post.exception.PostForbiddenException
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
@@ -43,8 +44,12 @@ class Post (
     var description: String = description
         protected set
 
-    @OneToMany(mappedBy = "post")
-    var dates: MutableList<PostDate> = mutableListOf()
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var images = mutableListOf<PostImage>()
+        protected set
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var schedules = mutableListOf<PostSchedule>()
         protected set
 
     var delivery: Boolean = delivery
@@ -60,8 +65,7 @@ class Post (
         protected set
 
     // TODO: 상품 엔티티 추가 후 변경
-    var product: String? = product
-        protected set
+    val product: String? = product
 
     var public: Boolean = false
         protected set
@@ -75,7 +79,6 @@ class Post (
         place: String?,
         minPrice: Int,
         maxPrice: Int,
-        product: String?,
     ) {
         this.category = category
         this.title = title
@@ -84,11 +87,16 @@ class Post (
         this.place = place
         this.minPrice = minPrice
         this.maxPrice = maxPrice
-        this.product = product
     }
 
-    fun updateDates(dates: MutableList<PostDate>) {
-        this.dates = dates
+    fun updateSchedule(schedules: MutableList<PostSchedule>) {
+        this.schedules.retainAll(schedules)
+        this.schedules.addAll(schedules)
+    }
+
+    fun updateImages(images: MutableList<PostImage>) {
+        this.images.retainAll(images)
+        this.images.addAll(images)
     }
 
     fun updatePublic(public: Boolean) {
@@ -101,5 +109,11 @@ class Post (
 
     fun isSale(): Boolean {
         return type == PostType.SALE
+    }
+
+    fun validateWriter(user: User) {
+        if (!isWriter(user)) {
+            throw PostForbiddenException("해당 게시글의 작성자가 아닙니다.")
+        }
     }
 }

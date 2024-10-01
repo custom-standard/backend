@@ -5,7 +5,6 @@ import com.example.custard.domain.order.enums.OrderStatus
 import com.example.custard.domain.order.exception.InvalidOrderStateException
 import com.example.custard.domain.order.exception.OrderForbiddenException
 import com.example.custard.domain.post.model.Post
-import com.example.custard.domain.common.date.Date
 import com.example.custard.domain.user.model.User
 import jakarta.persistence.*
 
@@ -17,8 +16,8 @@ class Order (
     responder: User,
     roleRequester: OrderPosition,
     roleResponder: OrderPosition,
+    requestMessage: String,
     price: Int,
-    date: Date,
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
@@ -35,16 +34,32 @@ class Order (
     val roleRequester: OrderPosition = roleRequester
     val roleResponder: OrderPosition = roleRequester
 
-    var price: Int = price
+    val requestMessage: String = requestMessage
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    var date: Date = date
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val images = mutableListOf<OrderImage>()
+
+    var price: Int = price
+        protected set
+
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val schedules: MutableList<OrderSchedule> = mutableListOf()
 
     var status: OrderStatus = OrderStatus.WAITING
 
-    fun updateOrder(price: Int, date: Date) {
+    fun updateSchedules(schedules: MutableList<OrderSchedule>) {
+        this.schedules.retainAll(schedules)
+        this.schedules.addAll(schedules)
+    }
+
+    fun updateImages(images: MutableList<OrderImage>) {
+        this.images.retainAll(images)
+        this.images.addAll(images)
+    }
+
+    fun updateOrder(price: Int, schedules: MutableList<OrderSchedule>) {
         this.price = price
-        this.date = date
+        updateSchedules(schedules)
     }
 
     fun confirmOrder(responder: User, accept: Boolean) {
@@ -63,6 +78,10 @@ class Order (
 
     fun backwardStatus() {
         status = status.stepBackward() ?: status
+    }
+
+    fun getOtherUser(user: User): User {
+        return if (requester == user) responder else requester
     }
 
     fun isRequester(user: User): Boolean {
